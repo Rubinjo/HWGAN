@@ -31,7 +31,18 @@ def mnist_data():
     out_dir = './dataset'
     return datasets.MNIST(root=out_dir, train=True, transform=compose, download=True)
 
-data = mnist_data()
+def iam_data():
+    compose = transforms.Compose(
+        [transforms.Grayscale(),
+         transforms.Scale((28,28)),
+         transforms.ToTensor(),
+         transforms.Normalize((0.5,), (0.5,))
+        ])
+    return datasets.ImageFolder(root = "./dataset/IAM/words", transform=compose)
+
+data = iam_data()
+
+print(data)
 
 # Create loader with data, so that we can iterate over it
 train_loader = torch.utils.data.DataLoader(
