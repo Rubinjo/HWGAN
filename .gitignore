@@ -1,0 +1,3 @@
+__pycache__/
+dataset/*
+!dataset/DATA_GUIDE.md
