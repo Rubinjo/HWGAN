@@ -5,15 +5,18 @@ import math
 import matplotlib.pyplot as plt
 from torchvision import transforms, datasets
 
+from PIL import Image
+import os
+
 # Random generator seed for replication
 torch.manual_seed(111)
 
 # Number of batches
 BATCH_SIZE = 32
 # Learning rate
-LR = 0.0001
+LR = 0.0002
 # Number of epochs
-NUM_EPOCHS = 50
+NUM_EPOCHS = 1
 
 # Create execution device that points to GPU or CPU
 device = ""
@@ -21,6 +24,18 @@ if torch.cuda.is_available():
     device = torch.device("cuda")
 else:
     device = torch.device("cpu")
+
+#Check for corrupt files
+def check_data(dir):
+    r = []
+    for root, dirs, files in os.walk(dir):
+        for name in files:
+            try:
+                v_image = Image.open(os.path.join(root, name))
+                v_image.verify()
+            except Exception:
+                print("file " + os.path.join(root, name) + " is corrupt and has been deleted.")
+                os.remove(os.path.join(root, name))
 
 # Load MNIST data
 def mnist_data():
@@ -31,6 +46,7 @@ def mnist_data():
     out_dir = './dataset'
     return datasets.MNIST(root=out_dir, train=True, transform=compose, download=True)
 
+# Load IAM words data
 def iam_data():
     compose = transforms.Compose(
         [transforms.Grayscale(),
@@ -38,15 +54,14 @@ def iam_data():
          transforms.ToTensor(),
          transforms.Normalize((0.5,), (0.5,))
         ])
-    return datasets.ImageFolder(root = "./dataset/IAM/words", transform=compose)
+    return datasets.ImageFolder(root = "./dataset/IAM/words/", transform=compose)
 
+check_data("./dataset/IAM/words/")
 data = iam_data()
-
-print(data)
 
 # Create loader with data, so that we can iterate over it
 train_loader = torch.utils.data.DataLoader(
-    data, batch_size=BATCH_SIZE, shuffle=True
+    data, batch_size=BATCH_SIZE, shuffle=True, drop_last=True
 )
 
 class Discriminator(nn.Module):
@@ -101,7 +116,8 @@ optimizer_generator = torch.optim.Adam(generator.parameters(), lr=LR)
 
 # Iterate through epochs
 for epoch in range(NUM_EPOCHS):
-    for n, (real_samples, mnist_labels) in enumerate(train_loader):
+    for n, (real_samples, _) in enumerate(train_loader):
+
         # Data for training the discriminator
         real_samples = real_samples.to(device=device)
         real_samples_labels = torch.ones((BATCH_SIZE, 1)).to(
@@ -158,3 +174,4 @@ for i in range(16):
     plt.imshow(generated_samples[i].reshape(28, 28), cmap="gray_r")
     plt.xticks([])
     plt.yticks([])
+plt.show()
