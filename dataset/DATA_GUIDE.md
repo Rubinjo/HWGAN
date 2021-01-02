@@ -10,7 +10,7 @@
 
 ### EMNIST (supported in OCR)
 
-1. Download EMNIST (by_class) dataset [website](https://www.nist.gov/srd/nist-special-database-19).
+1. Download EMNIST (by_class) dataset at this [website](https://www.nist.gov/srd/nist-special-database-19).
 2. Create the directory `dataset/EMNIST/`.
 3. Put directories `4a`, `4b`, ... into `dataset/EMNIST/`.
 4. Only the .png files are required, so all other files can be deleted, but this is not necessary.

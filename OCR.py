@@ -1,21 +1,19 @@
 import numpy as np
 import os
-from PIL import Image
 from pathlib import Path
+
+from PIL import Image
+from cv2 import cv2
 
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 from imutils import build_montages
 
-from cv2 import cv2
 import tensorflow as tf
 from tensorflow.keras import optimizers
 # import tensorflow_datasets as tfds
-import keras
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Flatten
-from keras.layers.convolutional import Conv2D, MaxPooling2D
-from keras.utils import np_utils
+from tensorflow.keras import models, layers
+from tensorflow.keras import utils
 
 # Variables
 # Model parameters
@@ -41,7 +39,6 @@ rootdir = Path("./dataset/EMNIST/")
 
 # List current package versions
 print("You are using Tensorflow version: " + tf.__version__)
-print("You are using Keras version: " + keras.__version__)
 print("You are using OpenCV version: " + cv2.__version__)
 
 # List if there is/are available GPU(s)
@@ -90,7 +87,6 @@ for label in labels:
 
 # Convert list to numpy array for further usage
 images = np.array(images)
-labels = np.array(labels)
 labelsIdx = np.array(labelsIdx)
 
 # load data
@@ -102,8 +98,8 @@ X_test = X_test.reshape((X_test.shape[0], WIDTH, HEIGHT, 1)).astype('float32')
 X_train = X_train / 255
 X_test = X_test / 255
 # one hot encode outputs
-y_train = np_utils.to_categorical(y_train)
-y_test = np_utils.to_categorical(y_test)
+y_train = utils.to_categorical(y_train)
+y_test = utils.to_categorical(y_test)
 num_classes = y_test.shape[1]
 
 print("Data has been processed\n")
@@ -111,16 +107,16 @@ print("Data has been processed\n")
 # define the larger model
 def larger_model():
 	# create model
-	model = Sequential()
-	model.add(Conv2D(30, (5, 5), input_shape=(WIDTH, HEIGHT, 1), activation='relu'))
-	model.add(MaxPooling2D())
-	model.add(Conv2D(15, (3, 3), activation='relu'))
-	model.add(MaxPooling2D())
-	model.add(Dropout(0.2))
-	model.add(Flatten())
-	model.add(Dense(128, activation='relu'))
-	model.add(Dense(50, activation='relu'))
-	model.add(Dense(num_classes, activation='softmax'))
+	model = models.Sequential()
+	model.add(layers.Conv2D(30, (5, 5), input_shape=(WIDTH, HEIGHT, 1), activation='relu'))
+	model.add(layers.MaxPooling2D())
+	model.add(layers.Conv2D(15, (3, 3), activation='relu'))
+	model.add(layers.MaxPooling2D())
+	model.add(layers.Dropout(0.2))
+	model.add(layers.Flatten())
+	model.add(layers.Dense(128, activation='relu'))
+	model.add(layers.Dense(50, activation='relu'))
+	model.add(layers.Dense(num_classes, activation='softmax'))
 	# Create optimizer
 	opt = optimizers.Adam(learning_rate=LEARNING_RATE)
 	# Compile model
@@ -176,5 +172,4 @@ for i in np.random.choice(np.arange(0, len(y_test)), size=(49,)):
 # construct the montage for the images
 montage = build_montages(images, (96, 96), (7, 7))[0]
 # show the output montage
-cv2.imshow("OCR Results", montage)
-cv2.waitKey(0)
+cv2.imwrite("models/ocr_model/ocr_example.png", montage)
