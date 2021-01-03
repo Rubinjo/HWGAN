@@ -8,7 +8,7 @@
 4. Put `ascii.tgz/words.txt` into `dataset/IAM/`.
 5. Put the content (directories `a01`, `a02`, ...) of `words.tgz` into `dataset/IAM/words/`.
 
-### EMNIST (supported in OCR)
+### EMNIST
 
 1. Download EMNIST (by_class) dataset at this [website](https://www.nist.gov/srd/nist-special-database-19).
 2. Create the directory `dataset/EMNIST/`.

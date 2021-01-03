@@ -1,10 +1,10 @@
 import numpy as np
 import os
 from pathlib import Path
+import sys
 
 from PIL import Image
 from cv2 import cv2
-
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 from imutils import build_montages
@@ -38,8 +38,8 @@ labelsIdx = []
 rootdir = Path("./dataset/EMNIST/")
 
 # List current package versions
+print("You are using Python version: " + sys.version)
 print("You are using Tensorflow version: " + tf.__version__)
-print("You are using OpenCV version: " + cv2.__version__)
 
 # List if there is/are available GPU(s)
 gpu = tf.config.list_physical_devices('GPU')
@@ -54,29 +54,33 @@ else:
 print("\nLoading in data...")
 
 # Loop through all directories and files
+i = 1
 for subdir in rootdir.iterdir():
-	for root, dirs, files in os.walk(subdir):
-		for name in files:
-			path = os.path.join(root, name)
-			try:
-				# Check if file is valid image
-				v_image = Image.open(path)
-				v_image.verify()
-				# Read original image
-				image = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
-				# Resize image
-				image = cv2.resize(image, (WIDTH, HEIGHT))
-				# Add image to data list
-				images.append(image)
-				# Get label out of folder name
-				labels_hex = os.path.basename(os.path.normpath(subdir))
-				labels_bytes = bytes.fromhex(labels_hex)
-				labels_ascii = labels_bytes.decode("ASCII")
-				# Add label to data list
-				labels.append(labels_ascii)
-			except Exception:
-				print("file " + path + " is corrupt or not a .png file and has been skipped.")
-				continue
+	while i < 2:
+		for root, dirs, files in os.walk(subdir):
+			for name in files:
+				path = os.path.join(root, name)
+				try:
+					# Check if file is valid image
+					v_image = Image.open(path)
+					v_image.verify()
+					# Read original image
+					image = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+					# Resize image
+					image = cv2.resize(image, (WIDTH, HEIGHT))
+					# Add image to data list
+					images.append(image)
+					# Get label out of folder name
+					labels_hex = os.path.basename(os.path.normpath(subdir))
+					labels_bytes = bytes.fromhex(labels_hex)
+					labels_ascii = labels_bytes.decode("ASCII")
+					# Add label to data list
+					labels.append(labels_ascii)
+				except Exception:
+					print("file " + path + " is corrupt or not a .png file and has been skipped.")
+					continue
+		i += 1
+	break
 
 print("Converting data...")
 
@@ -105,7 +109,7 @@ num_classes = y_test.shape[1]
 print("Data has been processed\n")
 
 # define the larger model
-def larger_model():
+def make_recognizer_model():
 	# create model
 	model = models.Sequential()
 	model.add(layers.Conv2D(30, (5, 5), input_shape=(WIDTH, HEIGHT, 1), activation='relu'))
@@ -117,13 +121,13 @@ def larger_model():
 	model.add(layers.Dense(128, activation='relu'))
 	model.add(layers.Dense(50, activation='relu'))
 	model.add(layers.Dense(num_classes, activation='softmax'))
-	# Create optimizer
-	opt = optimizers.Adam(learning_rate=LEARNING_RATE)
-	# Compile model
-	model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
 	return model
 # build the model
-model = larger_model()
+model = make_recognizer_model()
+# Create optimizer
+opt = optimizers.Adam(learning_rate=LEARNING_RATE)
+# Compile model
+model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
 # Fit the model
 fit = model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=EPOCHS, batch_size=BATCH_SIZE)
 # Final evaluation of the model
