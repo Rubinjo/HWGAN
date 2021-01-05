@@ -3,7 +3,7 @@
 ## Dependencies:
 
 - Python 3.6-3.8
-- tensorflow 2.x (for GPU support we recommend: tensorflow 2.4.0 + CUDA Toolkit 11.0 + cuDNN + NVIDIA GPU Driver 450 or higher)
+- tensorflow 2.x (for GPU support we recommend: tensorflow 2.4.0 + CUDA Toolkit 11.0 + cuDNN 8.0.4 + NVIDIA GPU Driver 450 or higher)
 - opencv-python
 - scikit-learn
 - Pillow

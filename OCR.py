@@ -1,5 +1,8 @@
-import numpy as np
+# Set tensorflow warning level
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+import numpy as np
 from pathlib import Path
 import sys
 
@@ -10,24 +13,19 @@ import matplotlib.pyplot as plt
 from imutils import build_montages
 
 import tensorflow as tf
-from tensorflow.keras import optimizers
 # import tensorflow_datasets as tfds
-from tensorflow.keras import models, layers
-from tensorflow.keras import utils
+from tensorflow.keras import models, layers, utils, optimizers
 
 # Variables
 # Model parameters
 EPOCHS = 20
-BATCH_SIZE = 200
+BATCH_SIZE = 300
 LEARNING_RATE = 0.01
 # Dataset distribution
 TEST_SIZE = 0.3
 # Image dimensions
 WIDTH = 28
 HEIGHT = 28
-
-# Set tensorflow warning level
-tf.get_logger().setLevel('INFO')
 
 # Create empty lists to hold the data
 images = []
@@ -99,8 +97,8 @@ labelsIdx = np.array(labelsIdx)
 X_train = X_train.reshape((X_train.shape[0], WIDTH, HEIGHT, 1)).astype('float32')
 X_test = X_test.reshape((X_test.shape[0], WIDTH, HEIGHT, 1)).astype('float32')
 # normalize inputs from 0-255 to 0-1
-X_train = X_train / 255
-X_test = X_test / 255
+X_train = (X_train - 127.5) / 127.5
+X_test = (X_test - 127.5) / 127.5
 # one hot encode outputs
 y_train = utils.to_categorical(y_train)
 y_test = utils.to_categorical(y_test)
@@ -127,14 +125,14 @@ model = make_recognizer_model()
 # Create optimizer
 opt = optimizers.Adam(learning_rate=LEARNING_RATE)
 # Compile model
-model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
+model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
 # Fit the model
 fit = model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=EPOCHS, batch_size=BATCH_SIZE)
 # Final evaluation of the model
 scores = model.evaluate(X_test, y_test, verbose=0)
 print("Large CNN Error: %.2f%%" % (100-scores[1]*100))
 # Save the model
-model.save('models/ocr_model')
+tf.saved_model.save(model, "./models/ocr_model/")
 
 # construct a plot that plots the training history
 N = np.arange(0, EPOCHS)
@@ -147,7 +145,7 @@ plt.xlabel("Epoch #")
 plt.ylabel("Loss/Accuracy")
 plt.legend(loc="lower left")
 # save plot image
-plt.savefig('models/ocr_model/ocr_graph.png')
+plt.savefig("./models/ocr_model/ocr_graph.png")
 
 # initialize our list of output test images
 images = []
@@ -176,4 +174,4 @@ for i in np.random.choice(np.arange(0, len(y_test)), size=(49,)):
 # construct the montage for the images
 montage = build_montages(images, (96, 96), (7, 7))[0]
 # show the output montage
-cv2.imwrite("models/ocr_model/ocr_example.png", montage)
+cv2.imwrite("./models/ocr_model/ocr_example.png", montage)
