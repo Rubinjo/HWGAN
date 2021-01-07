@@ -1,7 +1,7 @@
 import numpy as np
 import idx2numpy
 import matplotlib.pyplot as plt
-import json
+# import json
 
 #load emnist
 def loaddata(images_train, labels_train, images_test, labels_test):
