@@ -1,4 +1,17 @@
-# Handwriting-Replicator
+# HW_GAN: Handwritten Text Generator
+<p align="center">
+  <a aria-label="Python_shield" href="https://www.python.org/" target="_blank">
+    <img alt="Made with Python" src="http://ForTheBadge.com/images/badges/made-with-python.svg" target="_blank" />
+  </a>
+</p>
+
+This project was executed as a school assignment at the University of Twente. HWGAN is our own implementation of a handwriting replicator build with a GAN and OCR neural network. The neural networks in this project have been build with [tensorflow](https://github.com/tensorflow/tensorflow).
+
+## Project Overview
+- School: University of Twente
+- Course: Machine Learning II
+- Assignment Type: Open Project
+- Group Size: 4
 
 ## Setup
 
@@ -9,7 +22,7 @@
 pip install -r ./helper/requirements.txt
 ```
 
-3. For GPU support we recommend also install CUDA Toolkit 11.0, cuDNN 8.0.4 and NVIDIA GPU Driver 450 or higher.
+3. For GPU support we recommend to also install CUDA Toolkit 11.0, cuDNN 8.0.4 and NVIDIA GPU Driver 450 or higher ([NVIDIA website](https://developer.nvidia.com/cuda-toolkit)).
 
 ## Usage
 
@@ -52,3 +65,6 @@ python run.py
      train.py                                   # Main executable - Train all models
      run.py                                     # Main executable - Generate given word
      ...                                        # Extra project files
+     
+## Acknowledgments
+This project has already been executed by [ScrabbleGAN](https://github.com/amzn/convolutional-handwriting-gan), which is a more elaborate implementation of the same principal with [pytoch](https://github.com/pytorch/pytorch).
