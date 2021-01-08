@@ -10,7 +10,8 @@ import io
 import os
 from pathlib import Path
 
-#defines for post processing
+#for debugging:
+graphs = []
 
 #denoising is useful since during the rgb -> bin process noise is likely to get introduced
 DENOISING = False
@@ -99,7 +100,7 @@ def straightenImage(binary, asCV = True):
     else:
         return im.fromarray((255 * corrected).astype("uint8")).convert("RGB")
 
-def conv1d(scores, index, r = 10):
+def convline(scores, index, r = 10):
     x1 = index - r
     x2 = index + r
     if x1 < 0:
@@ -108,6 +109,39 @@ def conv1d(scores, index, r = 10):
         x2 = len(scores)
     score = np.sum(scores[x1:x2])
     return score / (x2 - x1)
+
+def conv1d(scores, r = 10):
+    out = []
+    for i in range(len(scores)):
+        out.append(convline(scores, i, r))
+    return out
+
+def convSmooth(scores, cycles = 1):
+    avg = scores
+    for i in range(cycles):
+        avg = conv1d(avg)
+    return avg
+
+def histToImage(hist):
+    h = len(hist)
+    w = int(math.ceil(max(hist)))
+    box = np.zeros((h,w), np.uint8)
+    for i in range(h):
+        val = int(hist[i])
+        box[i][:val] = 1
+    return box
+
+def findLocalMaxima(scores):
+    maxima = []
+    for i in range(1, len(scores) - 1):
+        prv = scores[i - 1]
+        nxt = scores[i + 1]
+        if scores[i] > prv and scores[i] > nxt:
+            maxima.append(i)
+    return maxima
+
+def filterMinima(maxindeces, scores):
+    
 
 def findLowStreaks(scores, tresh = 0):
     streaks = []
@@ -129,7 +163,13 @@ def findLowStreaks(scores, tresh = 0):
 
 def splitLines(binary):
     hist = np.sum(binary, axis=1)
-    streaks = findLowStreaks(hist)
+    avgs = convSmooth(hist, 5)
+    graphs.append(histToImage(avgs))
+
+    maxima = findLocalMaxima(avgs)
+    maxima = filterMinima(maxima, hist)
+    print(maxima)
+    streaks = findLowStreaks(avgs, tresh = 50)
     splits = []
     for streak in streaks:
         avg = int(round(np.sum(streak) / len(streak)))
@@ -202,11 +242,18 @@ for root, dirs, files in os.walk(rootdir):
             no_ext = os.path.splitext(name)[0]
             gray = cv.imread(path, cv.IMREAD_GRAYSCALE)
             binary = simplify(gray, tresh = 40, invert = True)
+            h, w = binary.shape[:2]
+            print(no_ext, 'height:', h, 'width', w)
             post = straightenImage(binary)
             lines = splitLines(post)
             print(no_ext, 'has', len(lines), 'lines')
             folder = os.path.join(outdir, no_ext)
-            os.mkdir(folder) 
+            if os.path.isdir(folder) == False:
+                os.mkdir(folder)
+            savepath = os.path.join(folder,  'skewed' + '.png')
+            print('saving skewed:', savepath)
+            corsave = im.fromarray((255 * post).astype("uint8")).convert("RGB")
+            corsave.save(savepath) 
             #groupCharacters(lines[0])
             for i in range(len(lines)):
                 ID = 'line_' + str(i) + '.png'
@@ -223,3 +270,7 @@ for root, dirs, files in os.walk(rootdir):
             print('file: ' + path + " is not usable")
             continue
 
+print(len(graphs))
+for i in range(len(graphs)):
+    img = im.fromarray((255 * graphs[i]).astype("uint8")).convert("RGB")
+    img.save('graph' + str(i) + '.png')
