@@ -6,25 +6,34 @@ from PIL import Image, ImageOps
 from cv2 import cv2
 import numpy as np
 
+import sys
+from userinput import cmd_in
+
 import tensorflow as tf
 from tensorflow.keras import models
 
+space = np.zeros((28, 28), np.uint8)
+
 if __name__=="__main__":
-    word = "bad"
+    word = cmd_in(sys.argv)
+
     noise = tf.random.normal([128, 100])
     
     images = []
     letters = list(word)
     for letter in letters:
         print("Generate image for " + letter)
-        # Load generator model corrosponding to letter
-        filename = "./models/gan_model/saved_models/g_model_{}.h5".format(letter)
-        model = models.load_model(filename, compile=False)
-        # Predict letter with model
-        prediction = model(noise)
-        # Convert prediction to proper image
-        prediction = prediction[1, :, :, 0].numpy()
-        prediction = (prediction * 255).astype(np.uint8)
+        if letter == " ":
+            prediction = space
+        else:
+            # Load generator model corrosponding to letter
+            filename = "./models/gan_model/saved_models/g_model_{}.h5".format(letter)
+            model = models.load_model(filename, compile=False)
+            # Predict letter with model
+            prediction = model(noise)
+            # Convert prediction to proper image
+            prediction = prediction[1, :, :, 0].numpy()
+            prediction = (prediction * 255).astype(np.uint8)
         image = Image.fromarray(prediction, mode="L")
         image = ImageOps.invert(image)
         # Save image to list
