@@ -2,4 +2,4 @@ __pycache__/
 .vscode/
 dataset/*
 !dataset/DATA_GUIDE.md
-models/gan_model/image_at_epoch_*.png
+models/gan_model/gifs/image_at_epoch_*.png

@@ -1,7 +1,4 @@
-# Set tensorflow warning level
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
 import numpy as np
 from pathlib import Path
 import sys
@@ -14,9 +11,6 @@ from imutils import build_montages
 
 import tensorflow as tf
 from tensorflow.keras import models, layers, utils, optimizers
-
-from emnist import extract_training_samples
-from emnist import extract_test_samples
 
 class OCR:
 	def __init__(self, number_epochs = 25, batch_size = 100, learning_rate = 0.001, width = 28, height = 28):
@@ -55,12 +49,13 @@ class OCR:
 		plt.figure()
 		plt.plot(N, fit.history["loss"], label="train_loss")
 		plt.plot(N, fit.history["val_loss"], label="val_loss")
-		plt.title("Training Loss and Accuracy")
+		plt.title("Training Loss")
 		plt.xlabel("Epoch #")
-		plt.ylabel("Loss/Accuracy")
+		plt.ylabel("Loss")
 		plt.legend(loc="lower left")
 		# save plot image
 		plt.savefig("./models/ocr_model/ocr_graph.png")
+		plt.close()
 
 		# initialize our list of output test images
 		images = []
