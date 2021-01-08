@@ -1,4 +1,4 @@
-# HW_GAN: Handwritten Text Generator
+# HWGAN: Handwritten Text Generator
 <p align="center">
   <a aria-label="Python_shield" href="https://www.python.org/" target="_blank">
     <img alt="Made with Python" src="http://ForTheBadge.com/images/badges/made-with-python.svg" target="_blank" />
