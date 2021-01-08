@@ -13,7 +13,7 @@ import tensorflow as tf
 from tensorflow.keras import models, layers, utils, optimizers
 
 class OCR:
-	def __init__(self, number_epochs = 25, batch_size = 100, learning_rate = 0.001, width = 28, height = 28):
+	def __init__(self, number_epochs = 50, batch_size = 128, learning_rate = 0.001, width = 28, height = 28):
 		self.N_EPOCHS = number_epochs
 		self.N_BATCH = batch_size
 		self.LR = learning_rate
