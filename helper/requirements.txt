@@ -1,0 +1,13 @@
+#### Requirements for project ####
+emnist
+imageio
+imutils
+matplotlib >= 2.1.1
+numpy >= 1.15
+opencv-python
+Pillow >= 7.1.2
+scikit-learn
+tensorflow >= 2.4.0
+git+https://github.com/tensorflow/docs
+
+
