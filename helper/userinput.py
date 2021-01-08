@@ -1,5 +1,4 @@
 def cmd_in(args):
-    print(args)
     out = ""
     words = args[1:]
     for i in range(len(words)):
