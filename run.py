@@ -7,7 +7,7 @@ from cv2 import cv2
 import numpy as np
 
 import sys
-from userinput import cmd_in
+from helper.userinput import cmd_in
 
 import tensorflow as tf
 from tensorflow.keras import models

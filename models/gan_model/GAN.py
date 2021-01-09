@@ -15,7 +15,7 @@ from tensorflow.keras.layers import Dense, Reshape, Flatten, Conv2D, Conv2DTrans
 from tensorflow_docs.vis import embed
 
 class GAN:
-    def __init__(self, dataset, character, number_epochs = 100, batch_size = 128, learning_rate = 0.001, r_act_epoch = 50, noise_dim = 100):
+    def __init__(self, dataset, character, number_epochs = 200, batch_size = 128, learning_rate = 0.0005, r_act_epoch = 100, noise_dim = 100):
         self.dataset = dataset
         self.character = character
         self.N_EPOCHS = number_epochs

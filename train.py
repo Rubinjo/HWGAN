@@ -73,9 +73,9 @@ if __name__=="__main__":
     letters = split(Word)
 
     #define parameters
-    NUM_EPOCHS = 100
+    NUM_EPOCHS = 200
     BATCH_SIZE = 128
-    LEARNING_RATE = 0.001
+    LEARNING_RATE = 0.0005
 
     # List current package versions
     print("You are using Python version: " + sys.version)
