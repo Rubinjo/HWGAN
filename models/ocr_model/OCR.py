@@ -21,16 +21,21 @@ class OCR:
 		self.HEIGHT = height
 	
 	def define_recognizer(self, alphabet):
-		# Create neural network layers
+		# Create neural network
 		model = models.Sequential()
-		model.add(layers.Conv2D(30, (5, 5), input_shape=(self.WIDTH, self.HEIGHT, 1), activation='relu'))
+		# 1st layer
+		model.add(layers.Conv2D(32, (5, 5), input_shape=(self.WIDTH, self.HEIGHT, 1), activation='relu'))
 		model.add(layers.MaxPooling2D())
-		model.add(layers.Conv2D(15, (3, 3), activation='relu'))
+		# 2nd layer
+		model.add(layers.Conv2D(16, (3, 3), activation='relu'))
 		model.add(layers.MaxPooling2D())
 		model.add(layers.Dropout(0.2))
+		# 3rd layer
 		model.add(layers.Flatten())
 		model.add(layers.Dense(128, activation='relu'))
-		model.add(layers.Dense(50, activation='relu'))
+		# 4th layer
+		model.add(layers.Dense(64, activation='relu'))
+		# 5th layer
 		model.add(layers.Dense(len(alphabet) + 1, activation='softmax'))
 		# Create optimizer
 		opt = optimizers.Adam(learning_rate=self.LR)

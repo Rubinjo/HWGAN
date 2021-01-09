@@ -8,10 +8,8 @@ import imageio
 import glob
 
 import tensorflow as tf
+from tensorflow.keras import optimizers, models, layers
 from tensorflow.keras.datasets.mnist import load_data
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Reshape, Flatten, Conv2D, Conv2DTranspose, LeakyReLU, Dropout, BatchNormalization
 from tensorflow_docs.vis import embed
 
 class GAN:
@@ -25,38 +23,45 @@ class GAN:
         self.NOISE = noise_dim
         self.seed = tf.random.normal([16, noise_dim])
 
-    @staticmethod
-    def define_discriminator():
-        model = Sequential()
-        model.add(Conv2D(64, (4,4), strides=(2, 2), padding='same', input_shape=(28,28,1)))
-        model.add(BatchNormalization())
-        model.add(LeakyReLU(alpha=0.2))
-        model.add(Dropout(0.4))
-        model.add(Conv2D(64, (4,4), strides=(2, 2), padding='same'))
-        model.add(BatchNormalization())
-        model.add(LeakyReLU(alpha=0.2))
-        model.add(Dropout(0.4))
-        model.add(Flatten())
-        model.add(Dense(1, activation='sigmoid'))
+    def define_discriminator(self):
+        model = models.Sequential()
+        # 1st layer - Downsample from 28x28 to 14x14
+        model.add(layers.Conv2D(64, (5,5), strides=(2, 2), padding='same', input_shape=(28,28,1), use_bias=False))
+        model.add(layers.BatchNormalization())
+        model.add(layers.LeakyReLU())
+        model.add(layers.Dropout(0.3))
+        # 2nd layer - Downsample to 7x7
+        model.add(layers.Conv2D(128, (5,5), strides=(2, 2), padding='same', use_bias=False))
+        model.add(layers.BatchNormalization())
+        model.add(layers.LeakyReLU())
+        model.add(layers.Dropout(0.3))
+        # 3rd layer
+        model.add(layers.Flatten())
+        model.add(layers.Dense(1, activation='sigmoid'))
         return model
 
     # define the standalone generator model
     def define_generator(self):
-        model = Sequential()
-        # foundation for 7x7 image
-        n_nodes = 128 * 7 * 7
-        model.add(Dense(n_nodes, input_dim=self.NOISE))
-        model.add(LeakyReLU(alpha=0.2))
-        model.add(Reshape((7, 7, 128)))
-        # upsample to 14x14
-        model.add(Conv2DTranspose(128, (4,4), strides=(2,2), padding='same'))
-        model.add(BatchNormalization())
-        model.add(LeakyReLU(alpha=0.2))
-        # upsample to 28x28
-        model.add(Conv2DTranspose(128, (4,4), strides=(2,2), padding='same'))
-        model.add(BatchNormalization())
-        model.add(LeakyReLU(alpha=0.2))
-        model.add(Conv2D(1, (7,7), activation='sigmoid', padding='same'))
+        model = models.Sequential()
+        # 1st layer - Foundation for 7x7 image
+        model.add(layers.Dense(7*7*128, use_bias=False, input_dim=self.NOISE))
+        model.add(layers.BatchNormalization())
+        model.add(layers.LeakyReLU())
+        model.add(layers.Reshape((7, 7, 128)))
+        # 2nd layer
+        model.add(layers.Conv2DTranspose(64, (5, 5), strides=(1, 1), padding='same', use_bias=False))
+        model.add(layers.BatchNormalization())
+        model.add(layers.LeakyReLU())
+        # 3rd layer - Upsample to 14x14
+        model.add(layers.Conv2DTranspose(32, (5, 5), strides=(2, 2), padding='same', use_bias=False))
+        model.add(layers.BatchNormalization())
+        model.add(layers.LeakyReLU())
+        # 4th layer - Upsample to 28x28
+        model.add(layers.Conv2DTranspose(16, (5,5), strides=(2,2), padding='same', use_bias=False))
+        model.add(layers.BatchNormalization())
+        model.add(layers.LeakyReLU())
+        # 5th layer
+        model.add(layers.Conv2D(1, (7,7), activation='sigmoid', padding='same'))
         return model
 
     # select real samples
@@ -160,8 +165,8 @@ class GAN:
     # train the generator and discriminator
     def train(self, g_model, d_model, r_model):
         # Create optimizers
-        generator_optimizer = Adam(learning_rate=self.LR)
-        discriminator_optimizer = Adam(learning_rate=self.LR)
+        generator_optimizer = optimizers.Adam(learning_rate=self.LR)
+        discriminator_optimizer = optimizers.Adam(learning_rate=self.LR)
         # Calculate batch size
         bat_per_epo = int(self.dataset.shape[0] / self.N_BATCH)
         # half_batch = int(self.N_BATCH / 2)
