@@ -124,7 +124,10 @@ class GAN:
         plt.ylabel("Loss")
         plt.legend(loc="lower left")
         # save plot image
-        filename = "./models/gan_model/graphs/gan_graph_{}.png".format(self.character)
+        if self.character.isupper():
+            filename = "./models/gan_model/graphs/gan_graph_{}_cap.png".format(self.character)
+        else:
+            filename = "./models/gan_model/graphs/gan_graph_{}_low.png".format(self.character)
         plt.savefig(filename)
         plt.close()
 
@@ -145,7 +148,10 @@ class GAN:
         plt.close()
     
     def generate_gif(self):
-        anim_file = "./models/gan_model/gifs/gan_process_{}.gif".format(self.character)
+        if self.character.isupper():
+            anim_file = "./models/gan_model/gifs/gan_process_{}_cap.gif".format(self.character)
+        else:
+            anim_file = "./models/gan_model/gifs/gan_process_{}_low.gif".format(self.character)
         with imageio.get_writer(anim_file, mode='I') as writer:
             filenames = glob.glob("./models/gan_model/gifs/image_at_epoch*.png")
             filenames = sorted(filenames)
@@ -214,8 +220,12 @@ class GAN:
             g_loss_hist.append(gen_loss)
             print ('Time for epoch {} is {} sec'.format(epoch + 1, time.time()-start))
         # Save model
-        g_model.save("./models/gan_model/saved_models/g_model_{}.h5".format(self.character))
-        d_model.save("./models/gan_model/saved_models/d_model_{}.h5".format(self.character))
+        if self.character.isupper():
+            g_model.save("./models/gan_model/saved_models/g_model_{}_cap.h5".format(self.character))
+            d_model.save("./models/gan_model/saved_models/d_model_{}_cap.h5".format(self.character))
+        else:
+            g_model.save("./models/gan_model/saved_models/g_model_{}_low.h5".format(self.character))
+            d_model.save("./models/gan_model/saved_models/d_model_{}_low.h5".format(self.character))
         # Make gif out of test images
         self.generate_gif()
         self.plot_history(d_loss_hist, g_loss_hist)
