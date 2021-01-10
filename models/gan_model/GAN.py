@@ -6,6 +6,7 @@ from IPython import display
 import matplotlib.pyplot as plt
 import imageio
 import glob
+from random import randrange
 
 import tensorflow as tf
 from tensorflow.keras import optimizers, models, layers
@@ -13,7 +14,7 @@ from tensorflow.keras.datasets.mnist import load_data
 from tensorflow_docs.vis import embed
 
 class GAN:
-    def __init__(self, dataset, character, number_epochs = 200, batch_size = 128, learning_rate = 0.0005, r_act_epoch = 100, noise_dim = 100):
+    def __init__(self, dataset, character, number_epochs = 128, batch_size = 128, learning_rate = 0.0005, r_act_epoch = 64, noise_dim = 100):
         self.dataset = dataset
         self.character = character
         self.N_EPOCHS = number_epochs
@@ -99,11 +100,8 @@ class GAN:
         total_loss = real_loss + fake_loss
         return total_loss
 
-    def recognizer_loss(self, cross_entropy, rec_real, rec_gen):
-        real_loss = cross_entropy(tf.ones_like(rec_real), rec_real)
-        fake_loss = cross_entropy(tf.zeros_like(rec_gen), rec_gen)
-        total_loss = real_loss + fake_loss
-        return total_loss
+    def recognizer_loss(self, cross_entropy, rec_gen):
+        return cross_entropy([1.], [rec_gen])
 
     def generator_loss_with_R(self, cross_entropy, fake_output, rec_loss):
         gen_loss = cross_entropy(tf.ones_like(fake_output), fake_output)
@@ -163,7 +161,7 @@ class GAN:
             os.remove(f)
 
     # train the generator and discriminator
-    def train(self, g_model, d_model, r_model):
+    def train(self, g_model, d_model, r_model, characters):
         # Create optimizers
         generator_optimizer = optimizers.Adam(learning_rate=self.LR)
         discriminator_optimizer = optimizers.Adam(learning_rate=self.LR)
@@ -190,13 +188,14 @@ class GAN:
                     fake_image = d_model(gen_img, training=True)
       
                     # This method returns a helper function to compute cross entropy loss
-                    cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
-
-                    if epoch > self.R_ACT_EPOCH:
+                    cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=False)
+                    if epoch >= self.R_ACT_EPOCH:
                         # Recoginize images with recognizer
-                        rec_real_img = r_model(X_real)
                         rec_gen_img = r_model(gen_img)
-                        rec_loss = self.recognizer_loss(cross_entropy, rec_real_img, rec_gen_img)
+                        gen_pred = rec_gen_img.numpy()
+                        gen_pred = gen_pred[randrange(self.N_BATCH)][characters.index(self.character)]
+
+                        rec_loss = self.recognizer_loss(cross_entropy, gen_pred)
                         gen_loss = self.generator_loss_with_R(cross_entropy, fake_image, rec_loss)
                     else:    
                         gen_loss = self.generator_loss_without_R(cross_entropy, fake_image)

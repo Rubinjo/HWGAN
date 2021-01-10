@@ -1,11 +1,9 @@
 import os
 import numpy as np
-from pathlib import Path
 import sys
 
 from PIL import Image
 from cv2 import cv2
-from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 from imutils import build_montages
 
@@ -13,14 +11,14 @@ import tensorflow as tf
 from tensorflow.keras import models, layers, utils, optimizers
 
 class OCR:
-	def __init__(self, number_epochs = 50, batch_size = 128, learning_rate = 0.001, width = 28, height = 28):
+	def __init__(self, number_epochs = 128, batch_size = 256, learning_rate = 0.001, width = 28, height = 28):
 		self.N_EPOCHS = number_epochs
 		self.N_BATCH = batch_size
 		self.LR = learning_rate
 		self.WIDTH = width
 		self.HEIGHT = height
 	
-	def define_recognizer(self, alphabet):
+	def define_recognizer(self):
 		# Create neural network
 		model = models.Sequential()
 		# 1st layer
@@ -36,14 +34,14 @@ class OCR:
 		# 4th layer
 		model.add(layers.Dense(64, activation='relu'))
 		# 5th layer
-		model.add(layers.Dense(len(alphabet) + 1, activation='softmax'))
+		model.add(layers.Dense(62, activation='softmax'))
 		# Create optimizer
 		opt = optimizers.Adam(learning_rate=self.LR)
 		# Compile model
 		model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
 		return model
 	
-	def evaluate(self, r_model, fit, images_test, labels_test, num_classes, alphabet):
+	def evaluate(self, r_model, fit, images_test, labels_test, word):
 		# Evaluate accuracy of the model
 		scores = r_model.evaluate(images_test, labels_test, verbose=0)
 		print("Accuracy: %.2f%%" % (scores[1]*100))
@@ -68,8 +66,10 @@ class OCR:
 		for i in np.random.choice(np.arange(0, len(labels_test)), size=(49,)):
 			# classify the character
 			probs = r_model.predict(images_test[np.newaxis, i])
+			# print(probs[0])
+			# print(len(probs[0]))
 			prediction = probs.argmax(axis=1)
-			label = alphabet[prediction[0] - 1]
+			label = word[prediction[0]]
 			# extract the image from the test data and initialize the text
 			# label color as green (correct)
 			image = (images_test[i] * 255).astype("uint8")
@@ -91,7 +91,7 @@ class OCR:
 		# show the output montage
 		cv2.imwrite("./models/ocr_model/ocr_example.png", montage)
 	
-	def train(self, r_model, alphabet, images_train, labels_train, images_test, labels_test, evaluation = True):
+	def train(self, r_model, word, images_train, labels_train, images_test, labels_test, evaluation = True):
 		# reshape to be [samples][width][height][channels]
 		images_train = np.expand_dims(images_train, axis=-1).astype('float32')
 		images_test = np.expand_dims(images_test, axis=-1).astype('float32')
@@ -101,10 +101,9 @@ class OCR:
 		# one hot encode outputs
 		labels_train = utils.to_categorical(labels_train)
 		labels_test = utils.to_categorical(labels_test)
-		num_classes = labels_test.shape[1]
 		# Fit the model
 		fit = r_model.fit(images_train, labels_train, validation_data=(images_test, labels_test), epochs=self.N_EPOCHS, batch_size=self.N_BATCH)
 		# Save model
 		r_model.save("./models/ocr_model/ocr_model.h5")
 		if evaluation == True:
-			self.evaluate(r_model, fit, images_test, labels_test, num_classes, alphabet)
+			self.evaluate(r_model, fit, images_test, labels_test, word)

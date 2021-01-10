@@ -44,6 +44,8 @@ python train.py
 python run.py example_word
 ```
 
+Available characters: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+
 ## File Structure
 
      dataset

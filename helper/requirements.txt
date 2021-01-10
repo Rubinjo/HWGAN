@@ -1,6 +1,5 @@
 #### Requirements for project ####
 emnist
-idx2numpy
 imageio
 imutils
 matplotlib >= 2.1.1
