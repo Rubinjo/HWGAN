@@ -6,6 +6,11 @@ import cv2 as cv
 import math
 import io
 
+from models.ocr_model.OCR import OCR
+
+import os
+from pathlib import Path
+
 def simplify(img, tresh = 200, invert = False):
     h,w = img.shape[:2]
     out = np.zeros([h,w])
@@ -77,11 +82,16 @@ def np_to_img(img, binary = False):
     else:
         return im.fromarray(img).astype("uint8t").convert("RGB") 
 
+def make_tf_compatible(img):
+    img = img.astype('float32')
+    imgs = np.expand_dims(img, axis=1)
 def grays_to_float32(imgs, normalized = True):
-    im_n = np.expand_dims(imgs, axis=-1).astype('float32')
+    im_n = np.expand_dims(imgs, axis=1).astype('float32')
+    im_n = np.expand_dims(im_n, axis=-1)
     if normalized:
         return im_n / 255
     return im_n
+
 #binary array to cv2_gray
 def expand(img):
     h,w = img.shape[:2]
@@ -392,50 +402,58 @@ def splitChars(line):
     # print(chars[0].shape[:2])
     return chars
 
-# def getBounds(cnt):
-#     minx = 100000
-#     maxx = 0
-#     miny = 100000
-#     maxy = 0
-#     for c in cnt:
-#         point = c[0]
-#         x = point[0]
-#         y = point[1]
-#         if x < minx:
-#             minx = x
-#         if x > maxx:
-#             maxx = x
-#         if y < miny:
-#             miny = y
-#         if y > maxy:
-#             maxy = y
-#     return [(maxy - miny) + 1, (maxx - minx) + 1, minx, miny, maxx, maxy]
+def getCharactersWithLabels(path, ocr = None, asIndex = True):
+    gray = cv.imread(path, cv.IMREAD_GRAYSCALE)
 
-# def getContours(gray):
-#     ret, thresh = cv.threshold(gray, 127, 255, 0)
-#     contours, hierarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_NONE)
-#     return contours, hierarchy
+    binary = convSimplify(gray, k_size = 10, invert = True)
+    lines, graphs = splitLines(binary)
 
-# def cnt_to_imgs(contours):
-#     imgs = []
-#     for cnt in contours:
-#         b = getBounds(cnt)
-#         img = np.zeros(b[:2])
-#         for c in cnt:
-#             point = c[0] - b[2:4]
-#             img[point[1]][point[0]] = 255
-#         imgs.append(img)
-#     return imgs
+    characters = []
+    for line in lines:
+        chars = splitChars(line)
+        for char in chars:
+            c = squareChar(char)
+            characters.append(c)
+    characters, noncharacters = filterOutliers(characters)
+    if ocr == None:
+        ocr = OCR()
 
-# def groupCharacters(line):
-#     gray = expand(line)
-#     #showImages([line, gray])
-#     contours = getContours(gray)
-#     bounds = cnt_to_imgs(contours)
-#     #print(len(bounds))
-#     #showImages(bounds)
-#     #print(len(contours))
-#     dsp = bounds + [line]
-#     showImages(dsp)
-#     hist = np.sum(line, axis = 0)
-#     x_axis = np.arange(0, len(hist), 1)
+    characters = resizeImages(characters, size = ocr.WIDTH)
+    characters = norms_to_grays(characters)
+
+    tf_chars = grays_to_float32(characters)
+
+    fullAlphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    all_labels = [char for char in fullAlphabet]
+
+    labels = []
+    for char in tf_chars:
+        index = np.argmax(ocr.model(char))
+        if asIndex:
+            labels.append(index)
+        else:
+            labels.append(all_labels[index])
+    
+    return characters, labels
+
+def getUserCharLabels(user, asIndex = True):
+    rootdir = Path("./userinput")
+    characters = []
+    labels = []
+    userpath = os.path.join(rootdir, user)
+    if not os.path.isdir(userpath):
+        return None
+    ocr = OCR()
+    for root, dirs, files in os.walk(userpath):
+        for name in files:
+            path = os.path.join(root, name)
+            print('loading:', path)
+            try:
+                chars, labs = getCharactersWithLabels(path, asIndex = asIndex, ocr = ocr)
+                characters += chars
+                labels += labs
+            except Exception:
+                print('file: ', path, 'is not usable')
+                continue
+    return characters, labels
+

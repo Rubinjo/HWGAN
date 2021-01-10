@@ -32,7 +32,7 @@ class OCR:
 		model.add(layers.Flatten())
 		model.add(layers.Dense(128, activation='relu'))
 		model.add(layers.Dense(50, activation='relu'))
-		model.add(layers.Dense(len(alphabet) + 1, activation='softmax'))
+		model.add(layers.Dense(len(alphabet), activation='softmax'))
 		# Create optimizer
 		opt = optimizers.Adam(learning_rate=self.LR)
 		# Compile model

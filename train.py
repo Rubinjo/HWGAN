@@ -55,6 +55,7 @@ if __name__=="__main__":
     # Train OCR model
     print("\nTraining recognizer...")
     ocr = OCR()
+    #r_model = ocr.model
     r_model = ocr.define_recognizer(characters)
     print('characters in model:', characters)
     ocr.train(r_model, characters, images_train, labels_train, images_test, labels_test)
