@@ -19,6 +19,7 @@ class OCR:
 		self.LR = learning_rate
 		self.WIDTH = width
 		self.HEIGHT = height
+		self.model = models.load_model("./models/ocr_model/ocr_model.h5", compile=False)
 	
 	def define_recognizer(self, alphabet):
 		# Create neural network layers
@@ -37,7 +38,10 @@ class OCR:
 		# Compile model
 		model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
 		return model
-	
+
+	def predict(self, char):
+		return self.model.predict(char[np.newaxis, 0])
+
 	def evaluate(self, r_model, fit, images_test, labels_test, num_classes, alphabet):
 		# Evaluate accuracy of the model
 		scores = r_model.evaluate(images_test, labels_test, verbose=0)
@@ -85,8 +89,7 @@ class OCR:
 		montage = build_montages(images, (96, 96), (7, 7))[0]
 		# show the output montage
 		cv2.imwrite("./models/ocr_model/ocr_example.png", montage)
-	def getPrediction(self, character):
-		character = cv2.resize
+	
 	def train(self, r_model, alphabet, images_train, labels_train, images_test, labels_test, evaluation = True):
 		# reshape to be [samples][width][height][channels]
 		images_train = np.expand_dims(images_train, axis=-1).astype('float32')

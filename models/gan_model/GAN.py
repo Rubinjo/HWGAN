@@ -182,7 +182,7 @@ class GAN:
                 with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
                     # Generate image
                     gen_img = g_model(noise, training=True)
-                    
+                    print('generated image', gen_img)
                     # Let discriminator evaluate images
                     real_image = d_model(X_real, training=True)
                     fake_image = d_model(gen_img, training=True)

@@ -77,17 +77,11 @@ def np_to_img(img, binary = False):
     else:
         return im.fromarray(img).astype("uint8t").convert("RGB") 
 
-def img_to_float32(img, normalized = True):
-    im = img.astype('float32')
+def grays_to_float32(imgs, normalized = True):
+    im_n = np.expand_dims(imgs, axis=-1).astype('float32')
     if normalized:
-        return im / 255
-    return im
-
-def bins_to_float32(imgs, normalized = True):
-    out = []
-    for img in imgs:
-        out.append(img_to_float32(img, normalized = normalized))
-    return out
+        return im_n / 255
+    return im_n
 #binary array to cv2_gray
 def expand(img):
     h,w = img.shape[:2]
@@ -98,6 +92,18 @@ def expand(img):
                 out[y][x] = 255
     return out
 
+def norms_to_grays(imgs):
+    out = []
+    for img in imgs:
+        h,w = img.shape[:2]
+        new = np.zeros((h,w),np.uint8)
+        for y in range(h):
+            for x in range(w):
+                new[y][x] = int(img[y][x] * 255)
+        out.append(new)
+    return out
+    #for img in imgs:
+        
 def invert(img, max = 1):
     return (max - img)
 
@@ -310,7 +316,7 @@ def squareChar(char):
     if w > h:
         diff = w - h
         u = int(diff / 2)
-        print('w,h', w, h, 'l', u, u + h)
+        #print('w,h', w, h, 'l', u, u + h)
         out = np.zeros((w,w))
         for y in range(h):
             for x in range(w):
@@ -319,7 +325,7 @@ def squareChar(char):
     elif h > w:
         diff = h - w
         l = int(diff / 2)
-        print('w,h', w, h, 'l', l, l + w)
+        #print('w,h', w, h, 'l', l, l + w)
         out = np.zeros((h,h))
         for y in range(h):
             for x in range(w):

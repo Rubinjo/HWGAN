@@ -31,7 +31,7 @@ if __name__=="__main__":
     # Load image data
     full_chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
     characters = [char for char in full_chars]
-
+    #print(len(characters))
     # List current package versions
     print("You are using Python version: " + sys.version)
     print("You are using Tensorflow version: " + tf.__version__)
@@ -55,7 +55,8 @@ if __name__=="__main__":
     # Train OCR model
     print("\nTraining recognizer...")
     ocr = OCR()
-    r_model = ocr.define_recognizer()
+    r_model = ocr.define_recognizer(characters)
+    print('characters in model:', characters)
     ocr.train(r_model, characters, images_train, labels_train, images_test, labels_test)
     print("Recognizer is done")
 
