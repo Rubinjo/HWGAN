@@ -85,7 +85,8 @@ class OCR:
 		montage = build_montages(images, (96, 96), (7, 7))[0]
 		# show the output montage
 		cv2.imwrite("./models/ocr_model/ocr_example.png", montage)
-	
+	def getPrediction(self, character):
+		character = cv2.resize
 	def train(self, r_model, alphabet, images_train, labels_train, images_test, labels_test, evaluation = True):
 		# reshape to be [samples][width][height][channels]
 		images_train = np.expand_dims(images_train, axis=-1).astype('float32')

@@ -31,12 +31,17 @@ kernel = np.ones((2,2),np.uint8)
 rootdir = Path("./input")
 outdir = Path("./output")
 
-def safeData(name, data):
-    folder = os.path.join(outdir, name)
-    if os.path.isdir(folder) == False:
+def safeImages(folder, name, imgs, binary = False):
+    print('directory of the folder:', folder)
+    if not os.path.isdir(folder):
+        print('creating folder')
         os.mkdir(folder)
-    savepath = os.path.join(folder,  'skewed' + '.png')
-    print('saving skewed:', savepath)
+    
+    for i in range(len(imgs)):
+        saveName = os.path.join(folder, name + str(i) + '.png')
+        print('saving image:', saveName)
+        img = np_to_img(imgs[i], binary)
+        img.save(saveName)
 
 def np_to_img(img, binary = False):
     if binary:
@@ -55,9 +60,11 @@ def processImage(name, binary):
     print(name, 'height:', h, 'width', w)
     post = straightenImage(binary)
     lines = splitLines(post, graphs)
-    for line in lines:
-        l = np_to_img(line, binary = True)
-        l = smoothImage(l)
+    folder = os.path.join(outdir, name)
+    safeImages(folder, 'line', lines, binary = True)
+    # for line in lines:
+    #     l = np_to_img(line, binary = True)
+    #     l = smoothImage(l)
 
 #pre processing:
 for root, dirs, files in os.walk(rootdir):
