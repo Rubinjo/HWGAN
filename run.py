@@ -22,10 +22,11 @@ if __name__=="__main__":
     images = []
     letters = list(word)
     for letter in letters:
-        print("Generate image for " + letter)
         if letter == " ":
+            print("Generate image for (space)")
             prediction = space
         else:
+            print("Generate image for " + letter)
             # Load generator model corrosponding to letter
             filename = "./models/gan_model/saved_models/g_model_{}.h5".format(letter)
             model = models.load_model(filename, compile=False)
