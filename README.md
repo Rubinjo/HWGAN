@@ -32,7 +32,7 @@ pip install -r ./helper/requirements.txt
 
 ## Usage
 
-- For training the OCR and GAN models you use the following command:
+- The training of the OCR and GAN models will by default use the [EMNIST ByMerge](https://developer.nvidia.com/cuda-toolkit), for custom datasets please follow our [DATA_GUIDE](userinput/DATA_GUIDE.md). For training the neural networks on the default dataset use the following command:
 
 ```
 python train.py
@@ -44,7 +44,7 @@ python train.py
 python run.py example_word
 ```
 
-Available characters: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+Available characters: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\_
 
 ## File Structure
 
