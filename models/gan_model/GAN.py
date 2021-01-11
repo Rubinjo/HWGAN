@@ -226,10 +226,18 @@ class GAN:
             d_loss_hist.append(disc_loss)
             g_loss_hist.append(gen_loss)
             print ('Time for epoch {} is {} sec'.format(epoch + 1, time.time()-start))
+
+        # Determine where to save the model
+        savedir = rootpath
+        if folder != None:
+            savedir = folder
+
         # Save model
         if self.character.isupper() or self.character.isnumeric():
-            g_model.save("./models/gan_model/saved_models/g_model_{}.h5".format(self.character))
-            d_model.save("./models/gan_model/saved_models/d_model_{}.h5".format(self.character))
+            g_model.save(os.path.join(savedir, 'g_model_{}.h5'.format(self.character)))
+            d_model.save(os.path.join(savedir, 'd_model_{}.h5'.format(self.character)))
+            #g_model.save("./models/gan_model/saved_models/g_model_{}.h5".format(self.character))
+            #d_model.save("./models/gan_model/saved_models/d_model_{}.h5".format(self.character))
         else:
             g_model.save(os.path.join(savedir, 'g_model_{}_low.h5'.format(self.character)))
             d_model.save(os.path.join(savedir, 'd_model_{}_low.h5'.format(self.character)))
@@ -238,12 +246,3 @@ class GAN:
         # Make gif out of test images
         self.generate_gif()
         self.plot_history(d_loss_hist, g_loss_hist)
-
-
-        savedir = rootpath
-        if folder != None:
-            savedir = folder
-
-        if self.character.isupper():
-            g_model.save(os.path.join(savedir, 'g_model_{}_cap.h5'.format(self.character)))
-            d_model.save(os.path.join(savedir, 'd_model_{}_cap.h5'.format(self.character)))
