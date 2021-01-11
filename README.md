@@ -38,13 +38,27 @@ pip install -r ./helper/requirements.txt
 python train.py
 ```
 
+- To train on a custom dataset (raw images) make sure there is a folder named foldername in userinput:
+
+```
+python train.py foldername
+```
+
 - For creating a word you use the following command (where example_word is the word you want to create):
 
 ```
-python run.py example_word
+python run.py -text example_word
 ```
 
 Available characters: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\_
+
+- For creating a word from your own dataset use the following command (where username is the same as foldername):
+
+```
+python run.py -user username -text hello world
+```
+
+
 
 ## File Structure
 
