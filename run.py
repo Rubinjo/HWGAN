@@ -22,16 +22,16 @@ if __name__=="__main__":
     images = []
     letters = list(word)
     for letter in letters:
-        if letter == " ":
+        if letter == "_":
             print("Generate image for (space)")
             prediction = space
         else:
             print("Generate image for " + letter)
             # Load generator model corrosponding to letter
-            if letter.isupper() or letter.isnumeric():
-                filename = "./models/gan_model/saved_models/g_model_{}.h5".format(letter)
-            else:
+            if letter.islower and (letter in "abdefghnqrt") and not letter.isnumeric():
                 filename = "./models/gan_model/saved_models/g_model_{}_low.h5".format(letter)
+            else:
+                filename = "./models/gan_model/saved_models/g_model_{}.h5".format(letter)
             model = models.load_model(filename, compile=False)
             # Predict letter with model
             prediction = model(noise)
