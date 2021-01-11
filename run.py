@@ -37,7 +37,7 @@ if __name__=="__main__":
     images = []
     letters = list(word)
     for letter in letters:
-        if letter == "_":
+        if letter == " " or letter == "_":
             print("Generate image for (space)")
             prediction = space
         else:
