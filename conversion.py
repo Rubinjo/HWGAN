@@ -93,6 +93,7 @@ def np_to_img(img, binary = False):
 def make_tf_compatible(img):
     img = img.astype('float32')
     imgs = np.expand_dims(img, axis=1)
+    
 def grays_to_float32(imgs, normalized = True):
     im_n = np.expand_dims(imgs, axis=1).astype('float32')
     im_n = np.expand_dims(im_n, axis=-1)

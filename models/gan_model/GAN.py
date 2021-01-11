@@ -175,7 +175,7 @@ class GAN:
             os.remove(f)
 
     # train the generator and discriminator
-    def train(self, g_model, d_model, r_model, characters, folder = None):
+    def train(self, g_model, d_model, r_model, characters, folder = None, makeGIF = False):
         # Create optimizers
         generator_optimizer = optimizers.Adam(learning_rate=self.LR)
         discriminator_optimizer = optimizers.Adam(learning_rate=self.LR)
@@ -213,7 +213,7 @@ class GAN:
                     else:    
                         gen_loss = self.generator_loss_without_R(cross_entropy, fake_image)
                     disc_loss = self.discriminator_loss(cross_entropy, real_image, fake_image)
-
+                    #print(disc_loss)
                 gradients_of_generator = gen_tape.gradient(gen_loss, g_model.trainable_variables)
                 gradients_of_discriminator = disc_tape.gradient(disc_loss, d_model.trainable_variables)
 
@@ -223,8 +223,9 @@ class GAN:
             display.clear_output(wait=True)
             self.generate_and_save_images(g_model, epoch)
             # Save losses of epoch to list
-            d_loss_hist.append(disc_loss)
-            g_loss_hist.append(gen_loss)
+            if makeGIF:
+                d_loss_hist.append(disc_loss)
+                g_loss_hist.append(gen_loss)
             print ('Time for epoch {} is {} sec'.format(epoch + 1, time.time()-start))
 
         # Determine where to save the model
@@ -244,5 +245,6 @@ class GAN:
             #g_model.save("./models/gan_model/saved_models/g_model_{}_low.h5".format(self.character))
             #d_model.save("./models/gan_model/saved_models/d_model_{}_low.h5".format(self.character))
         # Make gif out of test images
-        self.generate_gif()
-        self.plot_history(d_loss_hist, g_loss_hist)
+        if makeGIF:
+            self.generate_gif()
+            self.plot_history(d_loss_hist, g_loss_hist)
