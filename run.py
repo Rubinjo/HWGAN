@@ -14,6 +14,11 @@ from tensorflow.keras import models
 
 space = np.zeros((28, 28), np.uint8)
 
+rootpath = "./models/gan_model/saved_models"
+
+def getUserDir(user):
+    return os.path.join(rootpath, user)
+
 if __name__=="__main__":
     word = cmd_in(sys.argv)
 
