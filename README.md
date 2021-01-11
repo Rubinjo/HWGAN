@@ -10,7 +10,7 @@
   </a>
 </p>
 
-This project was executed as a school assignment at the University of Twente. HWGAN is our own implementation of a handwriting replicator build with a GAN and OCR neural network. The neural networks in this project have been build with [tensorflow](https://github.com/tensorflow/tensorflow).
+This project was executed as a school assignment at the University of Twente. HWGAN is our own implementation of a handwriting generator build with a GAN and OCR neural network. The neural networks in this project have been build with [tensorflow](https://github.com/tensorflow/tensorflow).
 
 ## Project Overview
 
@@ -32,7 +32,7 @@ pip install -r ./helper/requirements.txt
 
 ## Usage
 
-- The training of the OCR and GAN models will by default use the [EMNIST ByMerge](https://developer.nvidia.com/cuda-toolkit), for custom datasets please follow our [DATA_GUIDE](userinput/DATA_GUIDE.md). For training the neural networks on the default dataset use the following command:
+- The training of the OCR and GAN models will by default use the [EMNIST ByMerge dataset](https://www.nist.gov/itl/products-and-services/emnist-dataset), for custom datasets please follow our [DATA_GUIDE](userinput/DATA_GUIDE.md). For training the neural networks on the default dataset use the following command:
 
 ```
 python train.py
