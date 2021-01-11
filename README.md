@@ -1,7 +1,7 @@
 # HWGAN: Handwritten Text Generator
 
 <p align="center">
-  <img height="400" width="auto" src="image/HWGAN.png">
+  <img height="400" width="auto" src="image/HWGAN.gif">
 </p>
 
 <p align="center">
