@@ -10,12 +10,16 @@ from emnist import extract_test_samples
 import tensorflow as tf
 from tensorflow.saved_model import load
 
-from helper.split_data import loaddata
-from models.gan_model.GAN import GAN
+from helper.userinput import cmd_in
+
+from conversion import *
+
+from helper.split_data import *
+from models.gan_model.GAN import *
 from models.ocr_model.OCR import OCR
 
-def train_GAN(r_model, images_train, labels_train, images_test, labels_test, characters, character):
-    dataset = loaddata(images_train, labels_train, images_test, labels_test, characters, character)
+def train_GAN_EMNIST(r_model, train_images, train_labels, test_images, test_labels, characters, character):
+    dataset = loaddata(train_images, train_labels, test_images, test_labels, characters, character)
     print("Training GAN...")
     # Create GAN class
     gan = GAN(dataset, character)
@@ -27,7 +31,21 @@ def train_GAN(r_model, images_train, labels_train, images_test, labels_test, cha
     gan.train(g_model, d_model, r_model, characters)
     print("GAN is done")
 
+def train_GAN_USER(folder, r_model, images, labels, char, characters):
+    dataset = getDataset(images, labels, char)
+    print('Training GAN...')
+    # Create GAN class
+    gan = GAN(dataset, char)
+    # Create the discriminator
+    d_model = gan.define_discriminator()
+    # Create the generator
+    g_model = gan.define_generator()
+    # Train model
+    gan.train(g_model, d_model, r_model, characters, folder)
+
 if __name__=="__main__":
+    #get the required user (if any)
+    user = cmd_in(sys.argv)
     # Load image data
     full_chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
     characters = [char for char in full_chars]
@@ -55,14 +73,34 @@ if __name__=="__main__":
     # Train OCR model
     print("\nTraining recognizer...")
     ocr = OCR()
-    #r_model = ocr.model
-    r_model = ocr.define_recognizer(characters)
-    print('characters in model:', characters)
-    ocr.train(r_model, characters, images_train, labels_train, images_test, labels_test)
-    print("Recognizer is done")
 
-    # Train GANs for all characters
-    for i in range(0, len(characters)):
-        character = characters[i]
-        print("\nCharacter: " + character)
-        train_GAN(r_model, images_train, labels_train, images_test, labels_test, characters, character)
+    # EITHER:
+    r_model = ocr.model # use existing OCR model
+
+    # OR:
+    # r_model = ocr.define_recognizer(characters)
+    # print('characters in model:', characters)
+    # ocr.train(r_model, characters, images_train, labels_train, images_test, labels_test)
+    # print("Recognizer is done")
+
+    if user != "":
+        #there's a user input
+        print("\nLoading:", user, 'dataset')
+        user_chars, user_labels = getUserCharLabels(user, asIndex = False)
+        if user_chars != None:
+            available_chars = filterDuplicates(user_labels)
+            print('available chars in dataset:', available_chars)
+            print('creating directory for USER:', user)
+            folder = getGANDir(user)
+            print('folder:', folder)
+            for char in available_chars:
+                print("\nCharacter: " + char)
+                train_GAN_USER(folder, r_model, user_chars, user_labels, char, characters)
+    else:
+        # Train GANs for all characters
+        image_set = combineArrays(images_train, images_test)
+        label_set = combineArrays(labels_train, labels_test)
+        for i in range(len(characters)):
+            character = characters[i]
+            print("\nCharacter: " + character)
+            train_GAN_EMNIST(r_model, images_train, labels_train, images_test, labels_test, characters, character)

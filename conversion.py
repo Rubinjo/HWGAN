@@ -11,6 +11,14 @@ from models.ocr_model.OCR import OCR
 import os
 from pathlib import Path
 
+def combineArrays(arr1, arr2):
+    out = []
+    for a in arr1:
+        out.append(a)
+    for a in arr2:
+        out.append(a)
+    return out
+
 def simplify(img, tresh = 200, invert = False):
     h,w = img.shape[:2]
     out = np.zeros([h,w])
@@ -146,7 +154,7 @@ def straightenImage(binary, asCV = True):
 
 def showImages(imgs, labels = None):
     fig = plt.figure(figsize=(8, 8))
-    columns = 4
+    columns = int(math.sqrt(len(imgs)))
     rows = math.ceil(len(imgs) / columns)
     print(len(imgs), 'cols = ', columns, 'rows =', rows)
     for i in range(1, len(imgs) + 1):
@@ -442,12 +450,12 @@ def getUserCharLabels(user, asIndex = True):
     labels = []
     userpath = os.path.join(rootdir, user)
     if not os.path.isdir(userpath):
-        return None
+        return None, None
     ocr = OCR()
     for root, dirs, files in os.walk(userpath):
         for name in files:
             path = os.path.join(root, name)
-            print('loading:', path)
+            print('extracting characters from:', path)
             try:
                 chars, labs = getCharactersWithLabels(path, asIndex = asIndex, ocr = ocr)
                 characters += chars
