@@ -32,19 +32,19 @@ pip install -r ./helper/requirements.txt
 
 ## Usage
 
-- The training of the OCR and GAN models will by default use the [EMNIST ByMerge dataset](https://www.nist.gov/itl/products-and-services/emnist-dataset), for custom datasets please follow our [DATA_GUIDE](userinput/DATA_GUIDE.md). For training the neural networks on the default dataset use the following command:
+- The training of the OCR and GAN models will by default use the [EMNIST ByMerge dataset](https://www.nist.gov/itl/products-and-services/emnist-dataset). For training the neural networks on the default dataset use the following command:
 
 ```
 python train.py
 ```
 
-- To train on a custom dataset (raw images) make sure there is a folder named foldername in userinput:
+- For custom datasets please follow our [DATA_GUIDE](userinput/DATA_GUIDE.md). To train on a custom dataset (raw images) use the following command (where foldername is the name of the custom dataset):
 
 ```
 python train.py foldername
 ```
 
-- For creating a word you use the following command (where example_word is the word you want to create):
+- For creating a word with the by default trained neural networks you use the following command (where example_word is the word you want to create):
 
 ```
 python run.py -text example_word
@@ -69,7 +69,7 @@ python run.py -user username -text hello world
          ├── requirements.txt                   # Configuration file with all dependencies to install
          ├── split_data.py                      # Split the dataset into letter specific data
          ├── userinput.py                       # Handle user arguments
-         ├── ()                                 # Custom images are split into characters
+         ├── coversion.py                       # Custom images are split into characters
      models
          ├── gan_model/                         # Holds all files related to the GAN model
              ├── gifs/
@@ -87,7 +87,7 @@ python run.py -user username -text hello world
          ├── ...                                # Output of the run.py executable
      train.py                                   # Main executable - Train all models
      run.py                                     # Main executable - Generate given word
-     ...                                        # Extra project files
+     ...                                        # Extra project management files
 
 ## Acknowledgments
 
