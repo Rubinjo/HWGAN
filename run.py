@@ -7,7 +7,7 @@ from cv2 import cv2
 import numpy as np
 
 import sys
-from helper.userinput import cmd_in
+from helper.userinput import *
 
 import tensorflow as tf
 from tensorflow.keras import models
@@ -19,8 +19,18 @@ rootpath = "./models/gan_model/saved_models"
 def getUserDir(user):
     return os.path.join(rootpath, user)
 
+def isFile(file):
+    return os.path.isfile(file)
+
 if __name__=="__main__":
-    word = cmd_in(sys.argv)
+    user, word = getUserAndText(sys.argv)
+
+    basepath = rootpath
+    if user != 'emnist':
+        basepath = getUserDir(user)
+    if not os.path.isdir(basepath):
+        print(user, 'has no data \n using emnist instead')
+        basepath = rootpath
 
     noise = tf.random.normal([128, 100])
     
@@ -33,10 +43,17 @@ if __name__=="__main__":
         else:
             print("Generate image for " + letter)
             # Load generator model corrosponding to letter
+
             if letter.islower and (letter in "abdefghnqrt") and not letter.isnumeric():
-                filename = "./models/gan_model/saved_models/g_model_{}_low.h5".format(letter)
+                filename = os.path.join(basepath, 'g_model_{}_low.h5'.format(letter))
+                if not isFile(filename):
+                    print('missing letter, using emnist')
+                    filename = os.path.join(rootpath, 'g_model_{}_low.h5'.format(letter))
             else:
-                filename = "./models/gan_model/saved_models/g_model_{}.h5".format(letter)
+                filename = os.path.join(basepath, 'g_model_{}.h5'.format(letter))
+                if not isFile(filename):
+                    print('missing letter, using emnist')
+                    filename = os.path.join(rootpath, 'g_model_{}.h5'.format(letter))
             model = models.load_model(filename, compile=False)
             # Predict letter with model
             prediction = model(noise)
