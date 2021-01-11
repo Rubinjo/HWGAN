@@ -28,12 +28,10 @@ if __name__=="__main__":
         else:
             print("Generate image for " + letter)
             # Load generator model corrosponding to letter
-            if letter.isupper():
-                filename = "./models/gan_model/saved_models/g_model_{}_cap.h5".format(letter)
-            elif letter.islower():
-                filename = "./models/gan_model/saved_models/g_model_{}_low.h5".format(letter)
-            else:
+            if letter.isupper() or letter.isnumeric():
                 filename = "./models/gan_model/saved_models/g_model_{}.h5".format(letter)
+            else:
+                filename = "./models/gan_model/saved_models/g_model_{}_low.h5".format(letter)
             model = models.load_model(filename, compile=False)
             # Predict letter with model
             prediction = model(noise)
