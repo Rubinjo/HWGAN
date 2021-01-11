@@ -14,7 +14,7 @@ from tensorflow.keras.datasets.mnist import load_data
 from tensorflow_docs.vis import embed
 
 class GAN:
-    def __init__(self, dataset, character, number_epochs = 128, batch_size = 128, learning_rate = 0.0005, r_act_epoch = 64, noise_dim = 100):
+    def __init__(self, dataset, character, number_epochs = 128, batch_size = 256, learning_rate = 0.0005, r_act_epoch = 32, noise_dim = 100):
         self.dataset = dataset
         self.character = character
         self.N_EPOCHS = number_epochs
@@ -124,8 +124,8 @@ class GAN:
         plt.ylabel("Loss")
         plt.legend(loc="lower left")
         # save plot image
-        if self.character.isupper():
-            filename = "./models/gan_model/graphs/gan_graph_{}_cap.png".format(self.character)
+        if self.character.isupper() or self.character.isnumeric():
+            filename = "./models/gan_model/graphs/gan_graph_{}.png".format(self.character)
         else:
             filename = "./models/gan_model/graphs/gan_graph_{}_low.png".format(self.character)
         plt.savefig(filename)
@@ -148,8 +148,8 @@ class GAN:
         plt.close()
     
     def generate_gif(self):
-        if self.character.isupper():
-            anim_file = "./models/gan_model/gifs/gan_process_{}_cap.gif".format(self.character)
+        if self.character.isupper() or self.character.isnumeric():
+            anim_file = "./models/gan_model/gifs/gan_process_{}.gif".format(self.character)
         else:
             anim_file = "./models/gan_model/gifs/gan_process_{}_low.gif".format(self.character)
         with imageio.get_writer(anim_file, mode='I') as writer:
@@ -188,7 +188,6 @@ class GAN:
                 with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
                     # Generate image
                     gen_img = g_model(noise, training=True)
-                    print('generated image', gen_img)
                     # Let discriminator evaluate images
                     real_image = d_model(X_real, training=True)
                     fake_image = d_model(gen_img, training=True)
@@ -220,9 +219,9 @@ class GAN:
             g_loss_hist.append(gen_loss)
             print ('Time for epoch {} is {} sec'.format(epoch + 1, time.time()-start))
         # Save model
-        if self.character.isupper():
-            g_model.save("./models/gan_model/saved_models/g_model_{}_cap.h5".format(self.character))
-            d_model.save("./models/gan_model/saved_models/d_model_{}_cap.h5".format(self.character))
+        if self.character.isupper() or self.character.isnumeric():
+            g_model.save("./models/gan_model/saved_models/g_model_{}.h5".format(self.character))
+            d_model.save("./models/gan_model/saved_models/d_model_{}.h5".format(self.character))
         else:
             g_model.save("./models/gan_model/saved_models/g_model_{}_low.h5".format(self.character))
             d_model.save("./models/gan_model/saved_models/d_model_{}_low.h5".format(self.character))
