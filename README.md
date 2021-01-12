@@ -38,7 +38,7 @@ pip install -r ./helper/requirements.txt
 python train.py
 ```
 
-- For custom datasets please follow our [DATA_GUIDE](userinput/DATA_GUIDE.md). To train on a custom dataset (raw images) use the following command (where foldername is the name of the custom dataset):
+- For custom datasets please follow our [DATA_GUIDE](dataset/DATA_GUIDE.md). To train on a custom dataset (raw images) use the following command (where foldername is the name of the custom dataset):
 
 ```
 python train.py foldername
@@ -58,18 +58,16 @@ Available characters: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuv
 python run.py -user username -text hello world
 ```
 
-
-
 ## File Structure
 
      dataset
          ├── DATA_GUIDE.md                      # How to add custom datasets
          ├── ...                                # Location to add custom datasets
      helper
+         ├── coversion.py                       # Custom images are split into characters
          ├── requirements.txt                   # Configuration file with all dependencies to install
          ├── split_data.py                      # Split the dataset into letter specific data
          ├── userinput.py                       # Handle user arguments
-         ├── coversion.py                       # Custom images are split into characters
      models
          ├── gan_model/                         # Holds all files related to the GAN model
              ├── gifs/

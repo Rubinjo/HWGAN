@@ -12,7 +12,7 @@ from tensorflow.keras import models
 
 from helper.userinput import cmd_in
 
-from conversion import *
+from helper.conversion import *
 
 from helper.split_data import *
 from models.gan_model.GAN import *

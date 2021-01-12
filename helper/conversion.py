@@ -446,7 +446,7 @@ def getCharactersWithLabels(path, ocr = None, asIndex = True):
     return characters, labels
 
 def getUserCharLabels(user, asIndex = True):
-    rootdir = Path("./userinput")
+    rootdir = Path("./dataset")
     characters = []
     labels = []
     userpath = os.path.join(rootdir, user)
