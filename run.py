@@ -16,20 +16,20 @@ space = np.zeros((28, 28), np.uint8)
 
 rootpath = "./models/gan_model/saved_models"
 
-def getUserDir(user):
-    return os.path.join(rootpath, user)
+def getUserDir(dataset):
+    return os.path.join(rootpath, dataset)
 
 def isFile(file):
     return os.path.isfile(file)
 
 if __name__=="__main__":
-    user, word = getUserAndText(sys.argv)
+    dataset, word = getDataAndText(sys.argv)
 
     basepath = rootpath
-    if user != 'emnist':
-        basepath = getUserDir(user)
+    if dataset != 'emnist':
+        basepath = getUserDir(dataset)
     if not os.path.isdir(basepath):
-        print(user, 'has no data \n using emnist instead')
+        print(dataset, 'has no data \n using emnist instead')
         basepath = rootpath
 
     noise = tf.random.normal([128, 100])

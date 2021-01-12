@@ -44,8 +44,8 @@ def train_GAN_USER(folder, r_model, images, labels, char, characters):
     gan.train(g_model, d_model, r_model, characters, folder)
 
 if __name__=="__main__":
-    #get the required user (if any)
-    user = cmd_in(sys.argv)
+    #get the required dataset (if any)
+    dataset = cmd_in(sys.argv)
     TRAIN_OCR = False
 
     # Load image data
@@ -87,19 +87,19 @@ if __name__=="__main__":
             sys.exit("No recognizer is available, please enable training of recognizer")
         print("Recognizer is done")
 
-    if user != "":
+    if dataset != "":
         #there's a user input
-        print("\nLoading:", user, 'dataset')
-        user_chars, user_labels = getUserCharLabels(user, asIndex = False)
-        if user_chars != None:
-            available_chars = filterDuplicates(user_labels)
+        print("\nLoading:", dataset, 'dataset')
+        data_chars, data_labels = getUserCharLabels(dataset, asIndex = False)
+        if data_chars != None:
+            available_chars = filterDuplicates(data_labels)
             print('available chars in dataset:', available_chars)
-            print('creating directory for USER:', user)
-            folder = getGANDir(user)
+            print('creating directory for USER:', dataset)
+            folder = getGANDir(dataset)
             print('folder:', folder)
             for char in available_chars:
                 print("\nCharacter: " + char)
-                train_GAN_USER(folder, r_model, user_chars, user_labels, char, characters)
+                train_GAN_USER(folder, r_model, data_chars, data_labels, char, characters)
     else:
         # Train GANs for all characters
         image_set = combineArrays(images_train, images_test)

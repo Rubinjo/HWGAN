@@ -52,10 +52,10 @@ python run.py -text example_word
 
 Available characters: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\_
 
-- For creating a word from your own dataset use the following command (where username is the same as foldername):
+- For creating a word from your own dataset use the following command (where foldername is the name of the foldername specified in train.py and example_word is the word you want to create):
 
 ```
-python run.py -user username -text hello world
+python run.py -data foldername -text example_word
 ```
 
 ## File Structure
