@@ -153,9 +153,10 @@ def straightenImage(binary, asCV = True):
     else:
         return im.fromarray((255 * corrected).astype("uint8")).convert("RGB")
 
-def showImages(imgs, labels = None):
+def showImages(imgs, labels = None, columns = False):
     fig = plt.figure(figsize=(8, 8))
-    columns = int(math.sqrt(len(imgs)))
+    if columns == False:
+        columns = int(math.sqrt(len(imgs)))
     rows = math.ceil(len(imgs) / columns)
     print(len(imgs), 'cols = ', columns, 'rows =', rows)
     for i in range(1, len(imgs) + 1):
@@ -401,9 +402,10 @@ def seperateChars(bounds, line):
         chars.append(char)
     return chars
 
-def splitChars(line):
+def splitChars(line, graphs = []):
     hist = np.sum(line, axis=0)
     avgs = convSmooth(hist, 1, area = 4)
+    graphs.append(histToImage(avgs))
     streaks = findLowStreaks(avgs)
     bounds = streakToBound(streaks)
     chars = seperateChars(bounds, line)
@@ -418,8 +420,9 @@ def getCharactersWithLabels(path, ocr = None, asIndex = True):
     lines, graphs = splitLines(binary)
 
     characters = []
+    line_graphs = []
     for line in lines:
-        chars = splitChars(line)
+        chars = splitChars(line, graphs = line_graphs)
         for char in chars:
             c = squareChar(char)
             characters.append(c)
@@ -427,6 +430,7 @@ def getCharactersWithLabels(path, ocr = None, asIndex = True):
     if ocr == None:
         ocr = OCR()
 
+    showImages(line_graphs[:-1], columns = len(line_graphs))
     characters = resizeImages(characters, size = ocr.WIDTH)
     characters = norms_to_grays(characters)
 

@@ -43,7 +43,7 @@ if __name__=="__main__":
         else:
             print("Generate image for " + letter)
             # Load generator model corrosponding to letter
-
+            # abdeffghnqrt generally don't differ
             if letter.islower and (letter in "abdefghnqrt") and not letter.isnumeric():
                 filename = os.path.join(basepath, 'g_model_{}_low.h5'.format(letter))
                 if not isFile(filename):

@@ -21,6 +21,7 @@ from models.ocr_model.OCR import OCR
 def train_GAN_EMNIST(r_model, train_images, train_labels, test_images, test_labels, characters, character):
     dataset = loaddata(train_images, train_labels, test_images, test_labels, characters, character)
     print("Training GAN...")
+    print('dataset size:', len(dataset))
     # Create GAN class
     gan = GAN(dataset, character)
     # Create the discriminator
@@ -32,8 +33,9 @@ def train_GAN_EMNIST(r_model, train_images, train_labels, test_images, test_labe
     print("GAN is done")
 
 def train_GAN_USER(folder, r_model, images, labels, char, characters):
-    dataset = getDataset(images, labels, char)
+    dataset = getDataset(images, labels, char, targetsize = 1000)
     print('Training GAN...')
+    print('dataset size:', len(dataset))
     # Create GAN class
     gan = GAN(dataset, char)
     # Create the discriminator
@@ -72,7 +74,7 @@ if __name__=="__main__":
     images_test, labels_test = extract_test_samples('bymerge')
     print("Dataset has been loaded")
 
-    # Train OCR model
+    # Load OCR model
     ocr = OCR()
     if TRAIN_OCR:
         print("\nTraining recognizer...")
@@ -93,6 +95,7 @@ if __name__=="__main__":
         user_chars, user_labels = getUserCharLabels(user, asIndex = False)
         if user_chars != None:
             available_chars = filterDuplicates(user_labels)
+            available_chars = available_chars[10:]
             print('available chars in dataset:', available_chars)
             print('creating directory for USER:', user)
             folder = getGANDir(user)
@@ -102,8 +105,8 @@ if __name__=="__main__":
                 train_GAN_USER(folder, r_model, user_chars, user_labels, char, characters)
     else:
         # Train GANs for all characters
-        image_set = combineArrays(images_train, images_test)
-        label_set = combineArrays(labels_train, labels_test)
+        #image_set = combineArrays(images_train, images_test)
+        #label_set = combineArrays(labels_train, labels_test)
         for i in range(len(characters)):
             character = characters[i]
             print("\nCharacter: " + character)

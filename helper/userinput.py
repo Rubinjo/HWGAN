@@ -10,9 +10,9 @@ def cmd_in(args):
 def getArg(arg):
         if arg[0] == '-':
                 identifier = arg[1:]
-                if identifier == 'user':
+                if identifier == 'user' or identifier == 'folder' or identifier == 'dataset':
                         return True, 'user'
-                elif identifier == 'text':
+                elif identifier == 'text' or identifier == 'out':
                         return True, 'text'
         return False, 'none'
 
