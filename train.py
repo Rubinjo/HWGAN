@@ -101,7 +101,7 @@ if __name__=="__main__":
         if splitLines == 'split':
             collecLines = True
         data_chars, data_labels = getDatasetCharLabels(dataset, asIndex = False, collectLines = collectLines)
-        print('data chars:', data_chars)
+        print('data chars size:', len(data_chars))
         if samplesize != None:
             print('sampling: ', samplesize, 'characters')
             try:

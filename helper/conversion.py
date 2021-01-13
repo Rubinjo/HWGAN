@@ -470,6 +470,7 @@ def getDatasetCharLabels(user, asIndex = True, collectLines = True):
                 labels += labs
             except Exception:
                 print('file: ', path, 'is not usable and will be skipped')
+                print('exception:', Exception)
                 continue
     return characters, labels
 
