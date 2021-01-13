@@ -10,7 +10,7 @@ from emnist import extract_test_samples
 import tensorflow as tf
 from tensorflow.keras import models
 
-from helper.userinput import cmd_in
+from helper.userinput import *
 
 from helper.conversion import *
 
@@ -49,7 +49,7 @@ def train_GAN_USER(folder, r_model, images, labels, char, characters):
 
 if __name__=="__main__":
     # Get the required dataset (if any)
-    dataset = cmd_in(sys.argv)
+    dataset, splitLines, samplesize = getDataAndText(sys.argv)
     # Train OCR (or not)
     TRAIN_OCR = False
 
@@ -97,7 +97,16 @@ if __name__=="__main__":
     # Check if there is a user dataset
     if dataset != "":
         print("\nLoading:", dataset, 'dataset')
-        data_chars, data_labels = getDatasetCharLabels(dataset, asIndex = False, collectLines = False)
+        collectLines = False
+        if splitLines == 'split':
+            collecLines = True
+        data_chars, data_labels = getDatasetCharLabels(dataset, asIndex = False, collectLines = collectLines)
+        if samplesize != None:
+            try:
+                showImages(data_chars[:samplesize], labels = data_labels[:samplesize])
+            except Exception:
+                showImages(data_chars, labels = data_labels)
+                
         if data_chars != None:
             available_chars = filterDuplicates(data_labels)
             print('available chars in dataset:', available_chars)

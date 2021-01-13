@@ -14,14 +14,18 @@ def getArg(arg):
                         return True, 'data'
                 elif identifier == 'text':
                         return True, 'text'
+                elif identifier == 'sample':
+                        return True, 'sample'
         return False, 'none'
 
 def getDataAndText(args):
         args = args[1:]
         textParsing = False
         expectingData = False
+        expectingSample = False
         data = 'emnist'
         text = ""
+        sample = None
         for arg in args:
                 isarg, sort = getArg(arg)
                 if isarg:
@@ -33,6 +37,11 @@ def getDataAndText(args):
                                 textParsing = True
                                 expectingData = False
                                 continue
+                        elif sort == 'sample':
+                                textParsing = False
+                                expectingSample = True
+                                expectingData = False
+                                continue
                 if expectingData:
                         data = arg
                         expectingData = False
@@ -40,6 +49,10 @@ def getDataAndText(args):
                 if textParsing:
                         text += arg
                         text += " "
+                        continue
+                if expectingSample:
+                        sample = int(arg)
+                        expectingSample = False
         if text != "":
                 text = text[:len(text) - 1]
-        return data, text
+        return data, text, sample
