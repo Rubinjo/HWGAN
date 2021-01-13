@@ -430,7 +430,7 @@ def getCharactersWithLabels(path, ocr = None, asIndex = True):
     if ocr == None:
         ocr = OCR()
 
-    showImages(line_graphs[:-1], columns = len(line_graphs))
+    # showImages(line_graphs[:-1], columns = len(line_graphs))
     characters = resizeImages(characters, size = ocr.WIDTH)
     characters = norms_to_grays(characters)
 

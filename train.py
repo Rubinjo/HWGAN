@@ -30,7 +30,6 @@ def train_GAN_EMNIST(r_model, train_images, train_labels, test_images, test_labe
     g_model = gan.define_generator()
     # Train model
     gan.train(g_model, d_model, r_model, characters)
-    print("GAN is done")
 
 def train_GAN_USER(folder, r_model, images, labels, char, characters):
     dataset = getDataset(images, labels, char, targetsize = 1000)
@@ -43,7 +42,10 @@ def train_GAN_USER(folder, r_model, images, labels, char, characters):
     # Create the generator
     g_model = gan.define_generator()
     # Train model
-    gan.train(g_model, d_model, r_model, characters, folder)
+    try:
+        gan.train(g_model, d_model, r_model, characters, folder)
+    except Exception:
+        print('an error occured \n Skipping:', char)
 
 if __name__=="__main__":
     #get the required user (if any)
@@ -95,7 +97,7 @@ if __name__=="__main__":
         user_chars, user_labels = getUserCharLabels(user, asIndex = False)
         if user_chars != None:
             available_chars = filterDuplicates(user_labels)
-            available_chars = available_chars[10:]
+            #available_chars = available_chars[10:]
             print('available chars in dataset:', available_chars)
             print('creating directory for USER:', user)
             folder = getGANDir(user)
