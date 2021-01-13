@@ -8,6 +8,6 @@ Different datasets can be used to train our GAN model. Custom datasets are split
 
 ### Custom Dataset
 
-1. Create a main dataset directory `dataset/your_folder_name/`, your_folder_name can be any folder name without spaces.
-2. Put all images of your custom dataset into the created folder (`dataset/your_folder_name/`). Multiple subfolders in this main folder (`your_folder_name`) is also supported and should result in the same result.
-3. Run the train.py command with `your_folder_name` as argument, so command: `python -data train.py your_folder_name`. For more details on run arguments have a look at our [README](../README.md).
+1. Create a main dataset directory `dataset/folder_name/`, folder_name can be any folder name without spaces.
+2. Put all images of your custom dataset into the created folder (`dataset/folder_name/`). Multiple subfolders in this main folder (`folder_name`) is also supported and should result in the same result.
+3. Run the train.py command with `data` as argument, so command: `python train.py -data folder_name`. For more details on run arguments have a look at our [README](../README.md).

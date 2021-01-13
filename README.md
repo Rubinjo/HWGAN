@@ -46,13 +46,13 @@ python train.py
 python train.py -data folder_name
 ```
 
-- If images contain multiple lines for every image you need to enable line splitting which is done with the `text` argument follow by lines, like the following command:
+- If images contain multiple lines for every image you need to enable line splitting which is done with the `text` argument follow by `lines`, like the following command:
 
 ```
 python train.py -data folder_name -text lines
 ```
 
-Currently it is not possible to have dataset that combine single line images and multi line images.
+Currently it is not possible to have a dataset that combines single line images and multi-line images.
 
 - An example of the splitted data can also be shown during the training process. This is done with the `sample` argument follwed by the number of examples you want, like the following command:
 
@@ -70,10 +70,10 @@ python run.py -text example_word
 
 Available characters: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\_
 
-- For creating a word from your own dataset use the following command (where foldername is the name of the foldername specified in train.py and example_word is the word you want to create):
+- For creating a word from your own dataset use the following command (where folder_name is the name of the folder specified in train.py and example_word is the word you want to create):
 
 ```
-python run.py -data foldername -text example_word
+python run.py -data folder_name -text example_word
 ```
 
 ## File Structure
