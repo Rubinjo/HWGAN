@@ -12,7 +12,7 @@ from tensorflow.keras import models
 
 from helper.userinput import cmd_in
 
-from conversion import *
+from helper.conversion import *
 
 from helper.split_data import *
 from models.gan_model.GAN import *
@@ -48,11 +48,12 @@ def train_GAN_USER(folder, r_model, images, labels, char, characters):
         print('an error occured \n Skipping:', char)
 
 if __name__=="__main__":
-    #get the required user (if any)
-    user = cmd_in(sys.argv)
+    # Get the required dataset (if any)
+    dataset = cmd_in(sys.argv)
+    # Train OCR (or not)
     TRAIN_OCR = False
 
-    # Load image data
+    # Create possible GAN charcater list
     # full_chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
     full_chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabdefghnqrt"
     characters = [char for char in full_chars]
@@ -70,11 +71,13 @@ if __name__=="__main__":
     else:
         print("\nNo GPU was found")
     
-    # Load EMNIST dataset
-    print("\nLoading dataset...")
-    images_train, labels_train = extract_training_samples('bymerge')
-    images_test, labels_test = extract_test_samples('bymerge')
-    print("Dataset has been loaded")
+    # Check if default dataset is needed
+    if TRAIN_OCR or dataset == "":
+        # Load EMNIST dataset
+        print("\nLoading dataset...")
+        images_train, labels_train = extract_training_samples('bymerge')
+        images_test, labels_test = extract_test_samples('bymerge')
+        print("Dataset has been loaded")
 
     # Load OCR model
     ocr = OCR()
@@ -91,20 +94,19 @@ if __name__=="__main__":
             sys.exit("No recognizer is available, please enable training of recognizer")
         print("Recognizer is done")
 
-    if user != "":
-        #there's a user input
-        print("\nLoading:", user, 'dataset')
-        user_chars, user_labels = getUserCharLabels(user, asIndex = False)
-        if user_chars != None:
-            available_chars = filterDuplicates(user_labels)
-            #available_chars = available_chars[10:]
+    # Check if there is a user dataset
+    if dataset != "":
+        print("\nLoading:", dataset, 'dataset')
+        data_chars, data_labels = getUserCharLabels(dataset, asIndex = False)
+        if data_chars != None:
+            available_chars = filterDuplicates(data_labels)
             print('available chars in dataset:', available_chars)
-            print('creating directory for USER:', user)
-            folder = getGANDir(user)
+            print('creating directory for USER:', dataset)
+            folder = getGANDir(dataset)
             print('folder:', folder)
             for char in available_chars:
                 print("\nCharacter: " + char)
-                train_GAN_USER(folder, r_model, user_chars, user_labels, char, characters)
+                train_GAN_USER(folder, r_model, data_chars, data_labels, char, characters)
     else:
         # Train GANs for all characters
         #image_set = combineArrays(images_train, images_test)

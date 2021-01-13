@@ -10,36 +10,36 @@ def cmd_in(args):
 def getArg(arg):
         if arg[0] == '-':
                 identifier = arg[1:]
-                if identifier == 'user' or identifier == 'folder' or identifier == 'dataset':
-                        return True, 'user'
-                elif identifier == 'text' or identifier == 'out':
+                if identifier == 'data':
+                        return True, 'data'
+                elif identifier == 'text':
                         return True, 'text'
         return False, 'none'
 
-def getUserAndText(args):
+def getDataAndText(args):
         args = args[1:]
         textParsing = False
-        expectingUser = False
-        user = 'emnist'
+        expectingData = False
+        data = 'emnist'
         text = ""
         for arg in args:
                 isarg, sort = getArg(arg)
                 if isarg:
-                        if sort == 'user':
-                                expectingUser = True
+                        if sort == 'data':
+                                expectingData = True
                                 textParsing = False
                                 continue
                         elif sort == "text":
                                 textParsing = True
-                                expectingUser = False
+                                expectingData = False
                                 continue
-                if expectingUser:
-                        user = arg
-                        expectingUser = False
+                if expectingData:
+                        data = arg
+                        expectingData = False
                         continue
                 if textParsing:
                         text += arg
                         text += " "
         if text != "":
                 text = text[:len(text) - 1]
-        return user, text
+        return data, text
