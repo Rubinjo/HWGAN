@@ -51,7 +51,7 @@ if __name__=="__main__":
     # Get the required dataset (if any)
     dataset, splitLines, samplesize = getDataAndText(sys.argv)
     # Train OCR (or not)
-    TRAIN_OCR = False
+    TRAIN_OCR = True
 
     # Create possible GAN charcater list
     # full_chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
@@ -72,7 +72,7 @@ if __name__=="__main__":
         print("\nNo GPU was found")
     
     # Check if default dataset is needed
-    if TRAIN_OCR or dataset == "":
+    if TRAIN_OCR or dataset == "emnist":
         # Load EMNIST dataset
         print("\nLoading dataset...")
         images_train, labels_train = extract_training_samples('bymerge')
@@ -95,7 +95,7 @@ if __name__=="__main__":
         print("Recognizer is done")
 
     # Check if there is a user dataset
-    if dataset != "":
+    if dataset != "emnist":
         print("\nLoading:", dataset, 'dataset')
         collectLines = False
         if splitLines == 'split':
