@@ -416,14 +416,16 @@ def splitChars(line, graphs = []):
     # print(chars[0].shape[:2])
     return chars
 
-def getCharactersWithLabels(path, asIndex = True, ocr = None,):
+def getCharactersWithLabels(path, asIndex = True, ocr = None, collectLines = True):
     gray = cv.imread(path, cv.IMREAD_GRAYSCALE)
     binary = convSimplify(gray, k_size = 10, invert = True)
-    lines, graphs = splitLines(binary)
+    if collectLines:
+        lines, graphs = splitLines(binary)
+    else:
+        lines = [binary]
     characters = []
-    line_graphs = []
     for line in lines:
-        chars = splitChars(line, graphs = line_graphs)
+        chars = splitChars(line)
         for char in chars:
             c = squareChar(char)
             characters.append(c)
@@ -450,7 +452,7 @@ def getCharactersWithLabels(path, asIndex = True, ocr = None,):
     
     return characters, labels
 
-def getUserCharLabels(user, asIndex = True):
+def getDatasetCharLabels(user, asIndex = True, collectLines = True):
     rootdir = Path("./dataset")
     characters = []
     labels = []
@@ -463,7 +465,7 @@ def getUserCharLabels(user, asIndex = True):
             path = os.path.join(root, name)
             print('extracting characters from:', path)
             try:
-                chars, labs = getCharactersWithLabels(path, asIndex = asIndex, ocr = ocr)
+                chars, labs = getCharactersWithLabels(path, asIndex = asIndex, ocr = ocr, collectLines = collectLines)
                 characters += chars
                 labels += labs
             except Exception:

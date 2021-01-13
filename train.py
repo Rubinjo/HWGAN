@@ -97,7 +97,7 @@ if __name__=="__main__":
     # Check if there is a user dataset
     if dataset != "":
         print("\nLoading:", dataset, 'dataset')
-        data_chars, data_labels = getUserCharLabels(dataset, asIndex = False)
+        data_chars, data_labels = getDatasetCharLabels(dataset, asIndex = False, collectLines = False)
         if data_chars != None:
             available_chars = filterDuplicates(data_labels)
             print('available chars in dataset:', available_chars)
