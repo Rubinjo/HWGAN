@@ -32,17 +32,35 @@ pip install -r ./helper/requirements.txt
 
 ## Usage
 
+### Training
+
 - The training of the OCR and GAN models will by default use the [EMNIST ByMerge dataset](https://www.nist.gov/itl/products-and-services/emnist-dataset). For training the neural networks on the default dataset use the following command:
 
 ```
 python train.py
 ```
 
-- For custom datasets please follow our [DATA_GUIDE](dataset/DATA_GUIDE.md). To train on a custom dataset (raw images) use the following command (where foldername is the name of the custom dataset):
+- For custom datasets please follow our [DATA_GUIDE](dataset/DATA_GUIDE.md) for the setup. To train on a custom dataset (raw images) use the following command (where argument `data` specifies that you use a custom dataset and folder_name is the name of the custom dataset):
 
 ```
-python train.py foldername
+python train.py -data folder_name
 ```
+
+- If images contain multiple lines for every image you need to enable line splitting which is done with the `text` argument follow by lines, like the following command:
+
+```
+python train.py -data folder_name -text lines
+```
+
+Currently it is not possible to have dataset that combine single line images and multi line images.
+
+- An example of the splitted data can also be shown during the training process. This is done with the `sample` argument follwed by the number of examples you want, like the following command:
+
+```
+python train.py -data folder_name -sample 100
+```
+
+### Create Handwriting
 
 - For creating a word with the by default trained neural networks you use the following command (where example_word is the word you want to create):
 
