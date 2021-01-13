@@ -101,12 +101,14 @@ if __name__=="__main__":
         if splitLines == 'split':
             collecLines = True
         data_chars, data_labels = getDatasetCharLabels(dataset, asIndex = False, collectLines = collectLines)
+        print('data chars:', data_chars)
         if samplesize != None:
+            print('sampling: ', samplesize, 'characters')
             try:
                 showImages(data_chars[:samplesize], labels = data_labels[:samplesize])
             except Exception:
                 showImages(data_chars, labels = data_labels)
-                
+
         if data_chars != None:
             available_chars = filterDuplicates(data_labels)
             print('available chars in dataset:', available_chars)
