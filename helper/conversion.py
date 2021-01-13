@@ -53,7 +53,7 @@ def convSimplify(gray, div = 10, k_size = 10, mindiff = 70, invert = False):
     xstep = int(math.ceil(w / div))
     ystep = int(math.ceil(h / div))
 
-    print(xstep, ystep)
+    # print(xstep, ystep)
     x = 0
     y = 0
     for y1 in range(0, h, ystep):
@@ -231,7 +231,7 @@ def getAvgSpacing(arr):
 
 def findBounds(maxima, scores, area = 10):
     bounds = []
-    print(maxima)
+    # print(maxima)
     for maximum in maxima:
         bound = []
         found = False
@@ -301,12 +301,15 @@ def splitLines(binary):
     graphs = []
     hist = np.sum(binary, axis=1)
     avgs = convSmooth(hist, 5)
-
     graphs.append(histToImage(avgs))
-
     maxima = findLocalMaxima(avgs, r = 30)
+    print(maxima)
+    print(avgs)
     projectedSpacing = int(getAvgSpacing(maxima) / 2)
+    print(projectedSpacing)
+    print("here1")
     bounds = findBounds(maxima, avgs, area = projectedSpacing)
+    print("here2")
     bounds = filterDuplicates(bounds)
 
     lines = []
@@ -411,12 +414,10 @@ def splitChars(line):
     # print(chars[0].shape[:2])
     return chars
 
-def getCharactersWithLabels(path, ocr = None, asIndex = True):
+def getCharactersWithLabels(path, asIndex = True, ocr = None,):
     gray = cv.imread(path, cv.IMREAD_GRAYSCALE)
-
     binary = convSimplify(gray, k_size = 10, invert = True)
     lines, graphs = splitLines(binary)
-
     characters = []
     for line in lines:
         chars = splitChars(line)
@@ -462,7 +463,7 @@ def getUserCharLabels(user, asIndex = True):
                 characters += chars
                 labels += labs
             except Exception:
-                print('file: ', path, 'is not usable')
+                print('file: ', path, 'is not usable and will be skipped')
                 continue
     return characters, labels
 

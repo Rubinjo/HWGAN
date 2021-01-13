@@ -44,11 +44,12 @@ def train_GAN_USER(folder, r_model, images, labels, char, characters):
     gan.train(g_model, d_model, r_model, characters, folder)
 
 if __name__=="__main__":
-    #get the required dataset (if any)
+    # Get the required dataset (if any)
     dataset = cmd_in(sys.argv)
+    # Train OCR (or not)
     TRAIN_OCR = False
 
-    # Load image data
+    # Create possible GAN charcater list
     # full_chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
     full_chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabdefghnqrt"
     characters = [char for char in full_chars]
@@ -66,11 +67,13 @@ if __name__=="__main__":
     else:
         print("\nNo GPU was found")
     
-    # Load EMNIST dataset
-    print("\nLoading dataset...")
-    images_train, labels_train = extract_training_samples('bymerge')
-    images_test, labels_test = extract_test_samples('bymerge')
-    print("Dataset has been loaded")
+    # Check if default dataset is needed
+    if TRAIN_OCR or dataset == "":
+        # Load EMNIST dataset
+        print("\nLoading dataset...")
+        images_train, labels_train = extract_training_samples('bymerge')
+        images_test, labels_test = extract_test_samples('bymerge')
+        print("Dataset has been loaded")
 
     # Train OCR model
     ocr = OCR()
@@ -87,8 +90,8 @@ if __name__=="__main__":
             sys.exit("No recognizer is available, please enable training of recognizer")
         print("Recognizer is done")
 
+    # Check if there is a user dataset
     if dataset != "":
-        #there's a user input
         print("\nLoading:", dataset, 'dataset')
         data_chars, data_labels = getUserCharLabels(dataset, asIndex = False)
         if data_chars != None:

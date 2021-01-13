@@ -1,7 +1,7 @@
 __pycache__/
 .vscode/
-userinput/*
-!userinput/DATA_GUIDE.md
+dataset/*
+!dataset/DATA_GUIDE.md
 models/gan_model/gifs/image_at_epoch_*.png
 out/*
 !out/hwgan.png
