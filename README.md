@@ -52,7 +52,7 @@ For more specific options look below at arguments
 
 - `-data`: Specify which dataset to use (default = [emnist](https://www.nist.gov/itl/products-and-services/emnist-dataset))
 - `-sample`: Gives an example of how data is splitted. A number is given to indicate how many example images you want to retrieve (default = 0)
-- `-text`: Specify how you want the data to be splitted, options: `chars`, `words`, `lines` (default = words)
+- `-text`: Specify how you want the data to be splitted, options: `chars`, `words`, `lines` (default = chars)
   - `chars` is single character images
   - `words` is images of multiple words but only on a single line
   - `lines` is multiple words and lines in a single image
@@ -61,7 +61,7 @@ For more specific options look below at arguments
 
 ### Create Handwriting (`run.py`)
 
-- `-data`: Specify which dataset to use (default = [EMNIST ByMerge](https://www.nist.gov/itl/products-and-services/emnist-dataset))
+- `-data`: Specify which dataset to use (default = [emnist](https://www.nist.gov/itl/products-and-services/emnist-dataset))
 - `-text`: Specify the word you want to create (e.g. = example_word)
 
 ## File Structure
