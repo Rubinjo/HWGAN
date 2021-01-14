@@ -43,7 +43,8 @@ python train.py -data emnist
 ```
 python run.py -data emnist -text example_word
 ```
-Available characters: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\_
+Available characters: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\_  
+For more specific options look below at arguments
 
 ## Arguments
 
@@ -54,7 +55,7 @@ Available characters: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuv
 - `-text`: Specify how you want the data to be splitted, options: `chars`, `words`, `lines` (default = words)
   - `chars` is single character images
   - `words` is images of multiple words but only on a single line
-  - `lines` is multiple words and lines on a single image
+  - `lines` is multiple words and lines in a single image
   - Currently it is not possible to have a combination of these options, so your dataset needs to adhere to one of these options
 
 ### Create Handwriting (`run.py`)
