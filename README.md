@@ -50,13 +50,14 @@ For more specific options look below at arguments
 
 ### Training (`train.py`)
 
-- `-data`: Specify which dataset to use (default = [EMNIST ByMerge](https://www.nist.gov/itl/products-and-services/emnist-dataset))
+- `-data`: Specify which dataset to use (default = [emnist](https://www.nist.gov/itl/products-and-services/emnist-dataset))
 - `-sample`: Gives an example of how data is splitted. A number is given to indicate how many example images you want to retrieve (default = 0)
 - `-text`: Specify how you want the data to be splitted, options: `chars`, `words`, `lines` (default = words)
   - `chars` is single character images
   - `words` is images of multiple words but only on a single line
   - `lines` is multiple words and lines in a single image
   - Currently it is not possible to have a combination of these options, so your dataset needs to adhere to one of these options
+- `-ocr`: Specify if you want to train the OCR (recognizer) model, options: `True`, `False` (default = False)
 
 ### Create Handwriting (`run.py`)
 
