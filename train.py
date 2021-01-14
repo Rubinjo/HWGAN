@@ -51,7 +51,7 @@ if __name__=="__main__":
     # Get the required dataset (if any)
     dataset, splitLines, samplesize = getDataAndText(sys.argv)
     # Train OCR (or not)
-    TRAIN_OCR = True
+    TRAIN_OCR = False
 
     # Create possible GAN charcater list
     # full_chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
@@ -74,8 +74,9 @@ if __name__=="__main__":
     # Check if default dataset is needed
     if TRAIN_OCR or dataset == "emnist":
         # Load EMNIST dataset
-        print("\nLoading dataset...")
+        print("\nLoading EMNIST dataset...")
         images_train, labels_train = extract_training_samples('bymerge')
+        print(images_train)
         images_test, labels_test = extract_test_samples('bymerge')
         print("Dataset has been loaded")
 

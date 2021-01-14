@@ -40,13 +40,7 @@ pip install -r ./helper/requirements.txt
 python train.py
 ```
 
-- For custom datasets please follow our [DATA_GUIDE](dataset/DATA_GUIDE.md) for the setup. To train on a custom dataset (raw images) use the following command (where argument `data` specifies that you use a custom dataset and folder_name is the name of the custom dataset):
-
-```
-python train.py -data folder_name
-```
-
-- If images contain multiple lines for every image you need to enable line splitting which is done with the `text` argument follow by `lines`, like the following command:
+- For custom datasets please follow our [DATA_GUIDE](dataset/DATA_GUIDE.md) for the setup. To train on a custom dataset (raw images) use the `data` argument which specifies that you use a custom dataset and folder_name is then the name of the custom dataset. If images contain multiple lines for every image, you need to enable line splitting which is done with the `text` argument followed by `lines`, like the following command:
 
 ```
 python train.py -data folder_name -text lines
@@ -54,7 +48,7 @@ python train.py -data folder_name -text lines
 
 Currently it is not possible to have a dataset that combines single line images and multi-line images.
 
-- An example of the splitted data can also be shown during the training process. This is done with the `sample` argument follwed by the number of examples you want, like the following command:
+- An example of the splitted data can also be shown during the training process. This is done with the `sample` argument followed by the number of examples you want, like the following command:
 
 ```
 python train.py -data folder_name -sample 100

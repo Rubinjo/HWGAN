@@ -17,7 +17,7 @@ def loaddata(train_images, train_labels, test_images, test_labels, characters, c
     for i in range(len(test_labels)):
         if (characters[test_labels[i]] == character):
             images.append(test_images[i])
-    print('image example:', images[0])
+    # print('image example:', images[0])
     print('\nDataset size:', len(images))
     print('shape:', images[0].shape)
     # reshape to be [samples][width][height][channels]

@@ -304,13 +304,9 @@ def splitLines(binary):
     avgs = convSmooth(hist, 5)
     graphs.append(histToImage(avgs))
     maxima = findLocalMaxima(avgs, r = 30)
-    print(maxima)
-    print(avgs)
     projectedSpacing = int(getAvgSpacing(maxima) / 2)
     print(projectedSpacing)
-    print("here1")
     bounds = findBounds(maxima, avgs, area = projectedSpacing)
-    print("here2")
     bounds = filterDuplicates(bounds)
 
     lines = []

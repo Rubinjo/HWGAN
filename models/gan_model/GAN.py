@@ -22,7 +22,7 @@ def getGANDir(user):
     return path
 
 class GAN:
-    def __init__(self, dataset, character, number_epochs = 128, batch_size = 256, learning_rate = 0.0005, r_act_epoch = 32, noise_dim = 100):
+    def __init__(self, dataset, character, number_epochs = 64, batch_size = 16, learning_rate = 0.001, r_act_epoch = 16, noise_dim = 100):
         self.dataset = dataset
         self.character = character
         self.N_EPOCHS = number_epochs
