@@ -19,9 +19,8 @@ from models.gan_model.GAN import *
 from models.ocr_model.OCR import OCR
 
 def train_GAN_EMNIST(r_model, train_images, train_labels, test_images, test_labels, characters, character):
-    dataset = loaddata(train_images, train_labels, test_images, test_labels, characters, character)
+    dataset = loadDataDouble(train_images, train_labels, test_images, test_labels, characters, character)
     print("Training GAN...")
-    print('dataset size:', len(dataset))
     # Create GAN class
     gan = GAN(dataset, character)
     # Create the discriminator
@@ -32,9 +31,8 @@ def train_GAN_EMNIST(r_model, train_images, train_labels, test_images, test_labe
     gan.train(g_model, d_model, r_model, characters)
 
 def train_GAN_USER(folder, r_model, images, labels, char, characters):
-    dataset = getDataset(images, labels, char, targetsize = 1000)
+    dataset = loadDataSingle(images, labels, char)
     print('Training GAN...')
-    print('dataset size:', len(dataset))
     # Create GAN class
     gan = GAN(dataset, char)
     # Create the discriminator
@@ -44,18 +42,16 @@ def train_GAN_USER(folder, r_model, images, labels, char, characters):
     # Train model
     try:
         gan.train(g_model, d_model, r_model, characters, folder)
-    except Exception:
+    except:
         print('an error occured \n Skipping:', char)
 
 if __name__=="__main__":
-    # Get the required dataset (if any)
-    dataset, splitLines, samplesize = getDataAndText(sys.argv)
-    # Train OCR (or not)
-    TRAIN_OCR = False
+    # Retrieve given arguments
+    dataset, samplesize, splitText, trainOCR = getDataAndText(sys.argv)
 
-    # Create possible GAN charcater list
-    # full_chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    # String of all possible character labels
     full_chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabdefghnqrt"
+    # Create character list
     characters = [char for char in full_chars]
     # List current package versions
     print("You are using Python version: " + sys.version)
@@ -72,22 +68,26 @@ if __name__=="__main__":
         print("\nNo GPU was found")
     
     # Check if default dataset is needed
-    if TRAIN_OCR or dataset == "emnist":
+    if trainOCR or dataset == "emnist":
+        if samplesize > 0 or splitText != "chars":
+            print("\nData is not splitted with the default EMNIST dataset, so your sample and/or text command(s) will be ignored")
         # Load EMNIST dataset
         print("\nLoading EMNIST dataset...")
         images_train, labels_train = extract_training_samples('bymerge')
-        print(images_train)
         images_test, labels_test = extract_test_samples('bymerge')
         print("Dataset has been loaded")
+        print("Dataset size:", len(images_train) + len(images_test))
 
-    # Load OCR model
+    # Create OCR class
     ocr = OCR()
-    if TRAIN_OCR:
+    # Train OCR model if specified in arguments
+    if trainOCR:
         print("\nTraining recognizer...")
         r_model = ocr.define_recognizer(characters)
         print("characters in model:", characters)
         ocr.train(r_model, characters, images_train, labels_train, images_test, labels_test)
         print("Recognizer is done")
+    # Load OCR model
     else:
         print("\nLoading recognizer...")
         r_model = ocr.model
@@ -98,31 +98,25 @@ if __name__=="__main__":
     # Check if there is a user dataset
     if dataset != "emnist":
         print("\nLoading:", dataset, 'dataset')
-        collectLines = False
-        if splitLines == 'split':
-            collecLines = True
-        data_chars, data_labels = getDatasetCharLabels(dataset, asIndex = False, collectLines = collectLines)
-        print('data chars size:', len(data_chars))
-        if samplesize != None:
-            print('sampling: ', samplesize, 'characters')
+        data_chars, data_labels = getDatasetCharLabels(dataset, ocr, characters, splitText)    
+        print("Dataset has been loaded")
+        print("Dataset size:", len(data_chars))
+        if samplesize > 0:
+            print("sampling: ", samplesize, "characters")
             try:
                 showImages(data_chars[:samplesize], labels = data_labels[:samplesize])
-            except Exception:
+            except:
                 showImages(data_chars, labels = data_labels)
 
         if data_chars != None:
             available_chars = filterDuplicates(data_labels)
             print('available chars in dataset:', available_chars)
             print('creating directory for USER:', dataset)
-            folder = getGANDir(dataset)
-            print('folder:', folder)
             for char in available_chars:
                 print("\nCharacter: " + char)
-                train_GAN_USER(folder, r_model, data_chars, data_labels, char, characters)
+                train_GAN_USER(dataset, r_model, data_chars, data_labels, char, characters)
     else:
         # Train GANs for all characters
-        #image_set = combineArrays(images_train, images_test)
-        #label_set = combineArrays(labels_train, labels_test)
         for i in range(len(characters)):
             character = characters[i]
             print("\nCharacter: " + character)

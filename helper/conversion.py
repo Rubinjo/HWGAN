@@ -412,22 +412,23 @@ def splitChars(line, graphs = []):
     # print(chars[0].shape[:2])
     return chars
 
-def getCharactersWithLabels(path, asIndex = True, ocr = None, collectLines = True):
+def getCharactersWithLabels(path, ocr, full_chars, splitText = "chars"):
     gray = cv.imread(path, cv.IMREAD_GRAYSCALE)
     binary = convSimplify(gray, k_size = 10, invert = True)
-    if collectLines:
+    if splitText == "lines":
         lines, graphs = splitLines(binary)
-    else:
+    elif splitText == "words":
         lines = [binary]
-    characters = []
-    for line in lines:
-        chars = splitChars(line)
-        for char in chars:
-            c = squareChar(char)
-            characters.append(c)
-    characters, noncharacters = filterOutliers(characters)
-    if ocr == None:
-        ocr = OCR()
+    if splitText != "chars":
+        characters = []
+        for line in lines:
+            chars = splitChars(line)
+            for char in chars:
+                c = squareChar(char)
+                characters.append(c)
+        characters, noncharacters = filterOutliers(characters)
+    else:
+        characters = [binary]
 
     # showImages(line_graphs[:-1], columns = len(line_graphs))
     characters = resizeImages(characters, size = ocr.WIDTH)
@@ -435,38 +436,31 @@ def getCharactersWithLabels(path, asIndex = True, ocr = None, collectLines = Tru
 
     tf_chars = grays_to_float32(characters)
 
-    fullAlphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-    all_labels = [char for char in fullAlphabet]
-
     labels = []
     for char in tf_chars:
         index = np.argmax(ocr.model(char))
-        if asIndex:
-            labels.append(index)
-        else:
-            labels.append(all_labels[index])
+        labels.append(full_chars[index])
     
     return characters, labels
 
-def getDatasetCharLabels(user, asIndex = True, collectLines = True):
+def getDatasetCharLabels(user, ocr, full_chars, splitText = "chars"):
     rootdir = Path("./dataset")
     characters = []
     labels = []
     userpath = os.path.join(rootdir, user)
     if not os.path.isdir(userpath):
         return None, None
-    ocr = OCR()
     for root, dirs, files in os.walk(userpath):
         for name in files:
             path = os.path.join(root, name)
             print('extracting characters from:', path)
             try:
-                chars, labs = getCharactersWithLabels(path, asIndex = asIndex, ocr = ocr, collectLines = collectLines)
+                chars, labs = getCharactersWithLabels(path, ocr, full_chars, splitText)
                 characters += chars
                 labels += labs
             except Exception:
                 print('file: ', path, 'is not usable and will be skipped')
-                print('exception:', Exception)
+                print(Exception)
                 continue
     return characters, labels
 

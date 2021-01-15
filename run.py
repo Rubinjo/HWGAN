@@ -12,28 +12,22 @@ from helper.userinput import *
 import tensorflow as tf
 from tensorflow.keras import models
 
-space = np.zeros((28, 28), np.uint8)
-
-rootpath = "./models/gan_model/saved_models"
-
-def getUserDir(dataset):
-    return os.path.join(rootpath, dataset)
-
 def isFile(file):
     return os.path.isfile(file)
 
 if __name__=="__main__":
-    dataset, word = getDataAndText(sys.argv)
-
-    basepath = rootpath
-    if dataset != 'emnist':
-        basepath = getUserDir(dataset)
-    if not os.path.isdir(basepath):
-        print(dataset, 'has no data \n using emnist instead')
-        basepath = rootpath
+    # Retrieve given arguments
+    dataset, __, word, __ = getDataAndText(sys.argv)
 
     noise = tf.random.normal([128, 100])
-    
+    space = np.zeros((28, 28), np.uint8)
+
+    # Set path to models and backup
+    rootpath = "./models/gan_model"
+    if dataset != "emnist":
+        basepath = os.path.join(rootpath, dataset)
+    if not os.path.isdir(basepath):
+        sys.exit(dataset, "has no data \n please enter a trained on dataset")
     images = []
     letters = list(word)
     for letter in letters:
@@ -45,15 +39,15 @@ if __name__=="__main__":
             # Load generator model corrosponding to letter
             # abdeffghnqrt generally don't differ
             if letter.islower and (letter in "abdefghnqrt") and not letter.isnumeric():
-                filename = os.path.join(basepath, 'g_model_{}_low.h5'.format(letter))
+                filename = os.path.join(basepath, "saved_models/g_model_{}_low.h5".format(letter))
                 if not isFile(filename):
-                    print('missing letter, using emnist')
-                    filename = os.path.join(rootpath, 'g_model_{}_low.h5'.format(letter))
+                    print("missing letter, using emnist models instead")
+                    filename = os.path.join(rootpath, "saved_models/g_model_{}_low.h5".format(letter))
             else:
-                filename = os.path.join(basepath, 'g_model_{}.h5'.format(letter))
+                filename = os.path.join(basepath, "saved_models/g_model_{}.h5".format(letter))
                 if not isFile(filename):
-                    print('missing letter, using emnist')
-                    filename = os.path.join(rootpath, 'g_model_{}.h5'.format(letter))
+                    print("missing letter, using emnist models instead")
+                    filename = os.path.join(rootpath, "saved_models/g_model_{}.h5".format(letter))
             model = models.load_model(filename, compile=False)
             # Predict letter with model
             prediction = model(noise)

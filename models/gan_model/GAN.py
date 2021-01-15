@@ -13,16 +13,8 @@ from tensorflow.keras import optimizers, models, layers
 from tensorflow.keras.datasets.mnist import load_data
 from tensorflow_docs.vis import embed
 
-rootpath = "./models/gan_model/saved_models"
-
-def getGANDir(user):
-    path = os.path.join(rootpath, user)
-    if not os.path.isdir(path):
-        os.mkdir(path)
-    return path
-
 class GAN:
-    def __init__(self, dataset, character, number_epochs = 64, batch_size = 16, learning_rate = 0.001, r_act_epoch = 16, noise_dim = 100):
+    def __init__(self, dataset, character, number_epochs = 128, batch_size = 16, learning_rate = 0.001, r_act_epoch = 16, noise_dim = 100):
         self.dataset = dataset
         self.character = character
         self.N_EPOCHS = number_epochs
@@ -120,7 +112,7 @@ class GAN:
         return cross_entropy(tf.ones_like(fake_output), fake_output)
 
     # Plot performance
-    def plot_history(self, d_loss, g_loss):
+    def plot_history(self, d_loss, g_loss, savedir):
         # Plot loss
         N = np.arange(0, self.N_EPOCHS)
         plt.style.use("ggplot")
@@ -133,13 +125,13 @@ class GAN:
         plt.legend(loc="lower left")
         # save plot image
         if self.character.isupper() or self.character.isnumeric():
-            filename = "./models/gan_model/graphs/gan_graph_{}.png".format(self.character)
+            filename = os.path.join(savedir, "graphs/gan_graph_{}.png".format(self.character))
         else:
-            filename = "./models/gan_model/graphs/gan_graph_{}_low.png".format(self.character)
+            filename = os.path.join(savedir, "graphs/gan_graph_{}_low.png".format(self.character))
         plt.savefig(filename)
         plt.close()
 
-    def generate_and_save_images(self, model, epoch):
+    def generate_and_save_images(self, model, epoch, savedir):
         # Notice `training` is set to False.
         # This is so all layers run in inference mode (batchnorm).
         predictions = model(self.seed, training=False)
@@ -152,16 +144,16 @@ class GAN:
             # plot raw pixel data
             plt.imshow(predictions[i, :, :, 0], cmap='gray_r')
         # save plot to file
-        plt.savefig("./models/gan_model/gifs/image_at_epoch_{:04d}.png".format(epoch))
+        plt.savefig(os.path.join(savedir, "gifs/image_at_epoch_{:04d}.png".format(epoch)))
         plt.close()
     
-    def generate_gif(self):
+    def generate_gif(self, savedir):
         if self.character.isupper() or self.character.isnumeric():
-            anim_file = "./models/gan_model/gifs/gan_process_{}.gif".format(self.character)
+            anim_file = os.path.join(savedir, "gifs/gan_process_{}.gif".format(self.character))
         else:
-            anim_file = "./models/gan_model/gifs/gan_process_{}_low.gif".format(self.character)
+            anim_file = os.path.join(savedir, "gifs/gan_process_{}_low.gif".format(self.character))
         with imageio.get_writer(anim_file, mode='I') as writer:
-            filenames = glob.glob("./models/gan_model/gifs/image_at_epoch*.png")
+            filenames = glob.glob(os.path.join(savedir, "gifs/image_at_epoch*.png"))
             filenames = sorted(filenames)
             for filename in filenames:
                 image = imageio.imread(filename)
@@ -175,7 +167,12 @@ class GAN:
             os.remove(f)
 
     # train the generator and discriminator
-    def train(self, g_model, d_model, r_model, characters, folder = None, makeGIF = False):
+    def train(self, g_model, d_model, r_model, characters, folder = None, makeStats = True):
+        # Determine where to save the model
+        savedir = "./models/gan_model"
+        if folder != None:
+            savedir = os.path.join(savedir, folder)
+
         # Create optimizers
         generator_optimizer = optimizers.Adam(learning_rate=self.LR)
         discriminator_optimizer = optimizers.Adam(learning_rate=self.LR)
@@ -213,38 +210,33 @@ class GAN:
                     else:    
                         gen_loss = self.generator_loss_without_R(cross_entropy, fake_image)
                     disc_loss = self.discriminator_loss(cross_entropy, real_image, fake_image)
-                    #print(disc_loss)
                 gradients_of_generator = gen_tape.gradient(gen_loss, g_model.trainable_variables)
                 gradients_of_discriminator = disc_tape.gradient(disc_loss, d_model.trainable_variables)
 
                 generator_optimizer.apply_gradients(zip(gradients_of_generator, g_model.trainable_variables))
                 discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, d_model.trainable_variables))
-            # Create test images
             display.clear_output(wait=True)
-            self.generate_and_save_images(g_model, epoch)
+            # Create test images
+            if makeStats:
+                self.generate_and_save_images(g_model, epoch, savedir)
             # Save losses of epoch to list
-            if makeGIF:
+            if makeStats:
                 d_loss_hist.append(disc_loss)
                 g_loss_hist.append(gen_loss)
             print ('Time for epoch {} is {} sec'.format(epoch + 1, time.time()-start))
 
-        # Determine where to save the model
-        savedir = rootpath
-        if folder != None:
-            savedir = folder
-
         # Save model
         if self.character.isupper() or self.character.isnumeric():
-            g_model.save(os.path.join(savedir, 'g_model_{}.h5'.format(self.character)))
-            d_model.save(os.path.join(savedir, 'd_model_{}.h5'.format(self.character)))
+            g_model.save(os.path.join(savedir, 'saved_models/g_model_{}.h5'.format(self.character)))
+            d_model.save(os.path.join(savedir, 'saved_models/d_model_{}.h5'.format(self.character)))
             #g_model.save("./models/gan_model/saved_models/g_model_{}.h5".format(self.character))
             #d_model.save("./models/gan_model/saved_models/d_model_{}.h5".format(self.character))
         else:
-            g_model.save(os.path.join(savedir, 'g_model_{}_low.h5'.format(self.character)))
-            d_model.save(os.path.join(savedir, 'd_model_{}_low.h5'.format(self.character)))
+            g_model.save(os.path.join(savedir, 'saved_models/g_model_{}_low.h5'.format(self.character)))
+            d_model.save(os.path.join(savedir, 'saved_models/d_model_{}_low.h5'.format(self.character)))
             #g_model.save("./models/gan_model/saved_models/g_model_{}_low.h5".format(self.character))
             #d_model.save("./models/gan_model/saved_models/d_model_{}_low.h5".format(self.character))
         # Make gif out of test images
-        if makeGIF:
-            self.generate_gif()
-            self.plot_history(d_loss_hist, g_loss_hist)
+        if makeStats:
+            self.generate_gif(savedir)
+            self.plot_history(d_loss_hist, g_loss_hist, savedir)

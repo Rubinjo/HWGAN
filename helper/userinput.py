@@ -8,51 +8,48 @@ def cmd_in(args):
     return out
 
 def getArg(arg):
-        if arg[0] == '-':
-                identifier = arg[1:]
-                if identifier == 'data':
-                        return True, 'data'
-                elif identifier == 'text':
-                        return True, 'text'
-                elif identifier == 'sample':
-                        return True, 'sample'
-        return False, 'none'
+    if arg[0] == '-':
+        identifier = arg[1:]
+        if identifier == 'data':
+            return True, 'data'
+        elif identifier == 'text':
+            return True, 'text'
+        elif identifier == 'sample':
+            return True, 'sample'
+        elif identifier == 'ocr':
+            return True, 'ocr'
+    return False, 'none'
 
 def getDataAndText(args):
-        args = args[1:]
-        textParsing = False
-        expectingData = False
-        expectingSample = False
-        data = 'emnist'
-        text = ""
-        sample = None
-        for arg in args:
-                isarg, sort = getArg(arg)
-                if isarg:
-                        if sort == 'data':
-                                expectingData = True
-                                textParsing = False
-                                continue
-                        elif sort == "text":
-                                textParsing = True
-                                expectingData = False
-                                continue
-                        elif sort == 'sample':
-                                textParsing = False
-                                expectingSample = True
-                                expectingData = False
-                                continue
-                if expectingData:
-                        data = arg
-                        expectingData = False
-                        continue
-                if textParsing:
-                        text += arg
-                        text += " "
-                        continue
-                if expectingSample:
-                        sample = int(arg)
-                        expectingSample = False
-        if text != "":
-                text = text[:len(text) - 1]
-        return data, text, sample
+    args = args[1:]
+    # Establish default values
+    data = "emnist"
+    sample = 0
+    splitText = "chars"
+    ocr = False
+    # Loop through given arguments
+    for idx, arg in enumerate(args):
+        # Check if argument corrosponds to an expected argument
+        isarg, sort = getArg(arg)
+        if isarg:
+            if sort == 'data':
+                try:
+                    data = args[idx + 1]
+                except:
+                    continue
+            elif sort == 'sample':
+                try:
+                    sample = int(args[idx + 1])
+                except:
+                    continue
+            elif sort == "text":
+                try:
+                    splitText = args[idx + 1]
+                except:
+                    continue
+            elif sort == 'ocr':
+                try:
+                    ocr = args[idx + 1]
+                except:
+                    continue
+    return data, sample, splitText, ocr

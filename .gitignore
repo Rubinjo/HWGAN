@@ -2,6 +2,11 @@ __pycache__/
 .vscode/
 dataset/*
 !dataset/DATA_GUIDE.md
-models/gan_model/gifs/image_at_epoch_*.png
+models/gan_model
+!models/gan_model/gifs/gan_process_*.gif
+!models/gan_model/graphs/gan_graph_*.png
+!models/gan_model/saved_models/d_model_*.h5
+!models/gan_model/saved_models/g_model_*.h5
+!models/gan_model/GAN.py
 out/*
 !out/hwgan.png

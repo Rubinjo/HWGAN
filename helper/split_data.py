@@ -8,7 +8,7 @@ def grays_to_float32(imgs, normalized = True):
     return im_n
     
 # Load specific char dataset
-def loaddata(train_images, train_labels, test_images, test_labels, characters, character):
+def loadDataDouble(train_images, train_labels, test_images, test_labels, characters, character):
     images = []
     # Load all images of dataset that correspond to character
     for i in range(len(train_labels)):
@@ -17,9 +17,6 @@ def loaddata(train_images, train_labels, test_images, test_labels, characters, c
     for i in range(len(test_labels)):
         if (characters[test_labels[i]] == character):
             images.append(test_images[i])
-    # print('image example:', images[0])
-    print('\nDataset size:', len(images))
-    print('shape:', images[0].shape)
     # reshape to be [samples][width][height][channels]
     images = np.expand_dims(images, axis=-1).astype('float32')
     # normalize inputs from 0-255 to 0-1
@@ -27,18 +24,15 @@ def loaddata(train_images, train_labels, test_images, test_labels, characters, c
     return images
 
 
-def getDataset(images, labels, char, targetsize = 1000):
-    out = []
-    i = 0
-    while (True):
-        if labels[i % len(labels)] == char:
-            out.append(images[i % len(labels)])
-        if len(out) == targetsize:
-            break
-        i += 1
-    out = np.expand_dims(out, axis=-1).astype('float32')
+def loadDataSingle(images, labels, char):
+    data_images = []
+    # Load all images of dataset that correspond to character
+    for i in range(len(labels)):
+        if (labels[i] == char):
+            data_images.append(images[i])
+    # reshape to be [samples][width][height][channels]
+    data_images = np.expand_dims(data_images, axis=-1).astype('float32')
     # normalize inputs from 0-255 to 0-1
-    out = out / 255
-    return out
-    #return grays_to_float32(out)
+    data_images = data_images / 255
+    return data_images
     
