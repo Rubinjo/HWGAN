@@ -21,54 +21,48 @@ This project was executed as a school assignment at the University of Twente. HW
 
 ## Setup
 
-1. Use Python 3.6-3.8.
+1. Use Python 3.6-3.8
 2. Execute the following command to install required packages:
 
 ```
 pip install -r ./helper/requirements.txt
 ```
 
-3. For GPU support we recommend to also install CUDA Toolkit 11.0, cuDNN 8.0.4 and NVIDIA GPU Driver 450 or higher ([NVIDIA website](https://developer.nvidia.com/cuda-toolkit))([TensorFlow guide](https://www.tensorflow.org/install/gpu)).
+3. For GPU support we recommend to also install CUDA Toolkit 11.0, cuDNN 8.0.4 and NVIDIA GPU Driver 450 or higher ([NVIDIA website](https://developer.nvidia.com/cuda-toolkit))([TensorFlow guide](https://www.tensorflow.org/install/gpu))
 
 ## Usage
 
-### Training
-
-- The training of the OCR and GAN models will by default use the [EMNIST ByMerge dataset](https://www.nist.gov/itl/products-and-services/emnist-dataset). For training the neural networks on the default dataset use the following command:
+- The training of the OCR and GAN models will by default use the [EMNIST ByMerge dataset](https://www.nist.gov/itl/products-and-services/emnist-dataset), follow our [DATA_GUIDE](dataset/DATA_GUIDE.md) for the setup of custom datasets. For training the neural networks use the following command:
 
 ```
-python train.py
+python train.py -data emnist
 ```
 
-- For custom datasets please follow our [DATA_GUIDE](dataset/DATA_GUIDE.md) for the setup. To train on a custom dataset (raw images) use the `data` argument which specifies that you use a custom dataset and folder_name is then the name of the custom dataset. If images contain multiple lines for every image, you need to enable line splitting which is done with the `text` argument followed by `lines`, like the following command:
+- For creating a word use the following command (where example_word is the word you want to create):
 
 ```
-python train.py -data folder_name -text lines
+python run.py -data emnist -text example_word
 ```
+Available characters: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\_  
+For more specific options look below at arguments
 
-Currently it is not possible to have a dataset that combines single line images and multi-line images.
+## Arguments
 
-- An example of the splitted data can also be shown during the training process. This is done with the `sample` argument followed by the number of examples you want, like the following command:
+### Training (`train.py`)
 
-```
-python train.py -data folder_name -sample 100
-```
+- `-data`: Specify which dataset to use (default = [emnist](https://www.nist.gov/itl/products-and-services/emnist-dataset))
+- `-sample`: Gives an example of how data is splitted. A number is given to indicate how many example images you want to retrieve (default = 0)
+- `-text`: Specify how you want the data to be splitted, options: `chars`, `words`, `lines` (default = chars)
+  - `chars` is single character images
+  - `words` is images of multiple words but only on a single line
+  - `lines` is multiple words and lines in a single image
+  - Currently it is not possible to have a combination of these options, so your dataset needs to adhere to one of these options
+- `-ocr`: Specify if you want to train the OCR (recognizer) model, options: `True`, `False` (default = False)
 
-### Create Handwriting
+### Create Handwriting (`run.py`)
 
-- For creating a word with the by default trained neural networks you use the following command (where example_word is the word you want to create):
-
-```
-python run.py -text example_word
-```
-
-Available characters: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\_
-
-- For creating a word from your own dataset use the following command (where folder_name is the name of the folder specified in train.py and example_word is the word you want to create):
-
-```
-python run.py -data folder_name -text example_word
-```
+- `-data`: Specify which dataset to use (default = [emnist](https://www.nist.gov/itl/products-and-services/emnist-dataset))
+- `-text`: Specify the word you want to create (e.g. = example_word)
 
 ## File Structure
 
@@ -95,8 +89,8 @@ python run.py -data folder_name -text example_word
              ├── ...                            # Stats on the performance
      out
          ├── ...                                # Output of the run.py executable
-     train.py                                   # Main executable - Train all models
      run.py                                     # Main executable - Generate given word
+     train.py                                   # Main executable - Train all models
      ...                                        # Extra project management files
 
 ## Acknowledgments
