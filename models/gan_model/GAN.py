@@ -14,7 +14,7 @@ from tensorflow.keras.datasets.mnist import load_data
 from tensorflow_docs.vis import embed
 
 class GAN:
-    def __init__(self, dataset, character, number_epochs = 128, batch_size = 16, learning_rate = 0.001, r_act_epoch = 16, noise_dim = 100):
+    def __init__(self, dataset, character, number_epochs = 256, batch_size = 64, learning_rate = 0.0005, r_act_epoch = 64, noise_dim = 100):
         self.dataset = dataset
         self.character = character
         self.N_EPOCHS = number_epochs
@@ -113,6 +113,11 @@ class GAN:
 
     # Plot performance
     def plot_history(self, d_loss, g_loss, savedir):
+        folder = os.path.join(savedir, "graphs")
+        try:
+            os.mkdir(folder)
+        except:
+            pass
         # Plot loss
         N = np.arange(0, self.N_EPOCHS)
         plt.style.use("ggplot")
@@ -125,9 +130,9 @@ class GAN:
         plt.legend(loc="lower left")
         # save plot image
         if self.character.isupper() or self.character.isnumeric():
-            filename = os.path.join(savedir, "graphs/gan_graph_{}.png".format(self.character))
+            filename = os.path.join(folder, "gan_graph_{}.png".format(self.character))
         else:
-            filename = os.path.join(savedir, "graphs/gan_graph_{}_low.png".format(self.character))
+            filename = os.path.join(folder, "gan_graph_{}_low.png".format(self.character))
         plt.savefig(filename)
         plt.close()
 
@@ -135,6 +140,11 @@ class GAN:
         # Notice `training` is set to False.
         # This is so all layers run in inference mode (batchnorm).
         predictions = model(self.seed, training=False)
+        folder = os.path.join(savedir, "gifs")
+        try:
+            os.mkdir(folder)
+        except:
+            pass
         # plot images
         for i in range(predictions.shape[0]):
             # define subplot
@@ -144,7 +154,7 @@ class GAN:
             # plot raw pixel data
             plt.imshow(predictions[i, :, :, 0], cmap='gray_r')
         # save plot to file
-        plt.savefig(os.path.join(savedir, "gifs/image_at_epoch_{:04d}.png".format(epoch)))
+        plt.savefig(os.path.join(folder, "image_at_epoch_{:04d}.png".format(epoch)))
         plt.close()
     
     def generate_gif(self, savedir):
@@ -173,15 +183,21 @@ class GAN:
         if folder != None:
             savedir = os.path.join(savedir, folder)
 
+        # Initialise loss variables
+        disc_loss = 0
+        gen_loss = 0
+        # Initialise loss lists for loss graphs
+        d_loss_hist, g_loss_hist= list(), list()
+
         # Create optimizers
         generator_optimizer = optimizers.Adam(learning_rate=self.LR)
         discriminator_optimizer = optimizers.Adam(learning_rate=self.LR)
+        
         # Calculate batch size
         bat_per_epo = int(self.dataset.shape[0] / self.N_BATCH)
         # half_batch = int(self.N_BATCH / 2)
         # new_n_batch = self.N_BATCH
 
-        d_loss_hist, g_loss_hist= list(), list()
         # manually enumerate epochs
         for epoch in range(self.N_EPOCHS):
             start = time.time()
@@ -229,13 +245,9 @@ class GAN:
         if self.character.isupper() or self.character.isnumeric():
             g_model.save(os.path.join(savedir, 'saved_models/g_model_{}.h5'.format(self.character)))
             d_model.save(os.path.join(savedir, 'saved_models/d_model_{}.h5'.format(self.character)))
-            #g_model.save("./models/gan_model/saved_models/g_model_{}.h5".format(self.character))
-            #d_model.save("./models/gan_model/saved_models/d_model_{}.h5".format(self.character))
         else:
             g_model.save(os.path.join(savedir, 'saved_models/g_model_{}_low.h5'.format(self.character)))
             d_model.save(os.path.join(savedir, 'saved_models/d_model_{}_low.h5'.format(self.character)))
-            #g_model.save("./models/gan_model/saved_models/g_model_{}_low.h5".format(self.character))
-            #d_model.save("./models/gan_model/saved_models/d_model_{}_low.h5".format(self.character))
         # Make gif out of test images
         if makeStats:
             self.generate_gif(savedir)

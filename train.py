@@ -40,10 +40,10 @@ def train_GAN_USER(folder, r_model, images, labels, char, characters):
     # Create the generator
     g_model = gan.define_generator()
     # Train model
-    try:
-        gan.train(g_model, d_model, r_model, characters, folder)
-    except:
-        print('an error occured \n Skipping:', char)
+    # try:
+    gan.train(g_model, d_model, r_model, characters, folder)
+    # except:
+    #     print('an error occured \n Skipping:', char)
 
 if __name__=="__main__":
     # Retrieve given arguments
