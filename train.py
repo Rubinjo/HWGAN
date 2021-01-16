@@ -112,6 +112,10 @@ if __name__=="__main__":
             available_chars = filterDuplicates(data_labels)
             print('available chars in dataset:', available_chars)
             print('creating directory for USER:', dataset)
+            try:
+                os.mkdir("./models/gan_model/" + dataset)
+            except:
+                pass
             for char in available_chars:
                 print("\nCharacter: " + char)
                 train_GAN_USER(dataset, r_model, data_chars, data_labels, char, characters)
